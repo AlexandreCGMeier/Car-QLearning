@@ -515,6 +515,7 @@ class MyWindow(pyglet.window.Window):
         self.state = game.get_state()
         self.nextState = []
         self.loadSession()
+        self.episodereward = []
 
     def loadSession(self):
         if load_traing_model:
@@ -558,7 +559,8 @@ class MyWindow(pyglet.window.Window):
             choice = np.argmax(Qs)
             action = possible_actions[int(choice)]
 
-        game.make_action(action)
+        reward = game.make_action(action)
+        
         # game.render()
         done = game.is_episode_finished()
 
@@ -631,6 +633,7 @@ if training:
 
                 # Add the reward to total reward
                 episode_rewards.append(reward)
+                print("Total Reward" + Str(np.sum(episode_rewards)))
                 if step >= max_steps:
                     pass
                     #print("fuckin nice mate")

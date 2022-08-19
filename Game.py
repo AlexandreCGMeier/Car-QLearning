@@ -377,7 +377,7 @@ class Car:
         drawY = self.direction.y * self.width / 2 + upVector.y * self.height / 2
         self.carSprite.update(x=self.x - drawX, y=self.y - drawY, rotation=-get_angle(self.direction))
         self.carSprite.draw()
-        # self.showCollisionVectors()
+        self.showCollisionVectors()
 
     """
      returns a vector of where a point on the car is after rotation 
@@ -566,7 +566,7 @@ class Car:
         for wall in self.walls:
             if wall.hitCar(self):
                 return True
-        r()eturn False
+        return False
 
     """
     returns the point of collision of a line (x1,y1,x2,y2) with the walls, 

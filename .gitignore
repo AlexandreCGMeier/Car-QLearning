@@ -5,6 +5,8 @@ __pycache__/
 venv/
 allModels/
 models/
+*.pickle
+
 
 # C extensions
 *.so

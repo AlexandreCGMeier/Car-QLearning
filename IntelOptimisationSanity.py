@@ -18,4 +18,5 @@ def get_mkl_enabled_flag():
     return mkl_enabled
 
 print ("We are using Tensorflow version", tf.__version__) #2.8?
+print("IF MKL enabled returns True, then Intel Optimisation present.")
 print("MKL enabled :", get_mkl_enabled_flag()) # TRUE?
