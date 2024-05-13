@@ -49,10 +49,10 @@ memory_size = 100000  # Number of experiences the Memory can keep
 pretrain_length = memory_size  # Number of experiences stored in the Memory when initialized for the first time
 
 ### MODIFY THIS TO FALSE IF YOU JUST WANT TO SEE THE TRAINED AGENT
-metaTraining = True
-real_load_training_model_number = 0
+metaTraining = False
+real_load_training_model_number = 49000
 
-if metaTraining == True:
+if metaTraining:
     training =  True
     load = False
     starting_episode = real_load_training_model_number
@@ -633,7 +633,7 @@ if training:
 
                 # Add the reward to total reward
                 episode_rewards.append(reward)
-                print("Total Reward" + Str(np.sum(episode_rewards)))
+                #print("Total Reward" + str(np.sum(episode_rewards)))
                 if step >= max_steps:
                     pass
                     #print("fuckin nice mate")

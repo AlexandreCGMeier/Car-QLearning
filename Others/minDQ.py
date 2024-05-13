@@ -24,7 +24,7 @@ print("Action Space: {}".format(env.action_space))
 print("State space: {}".format(env.observation_space))
 
 # An episode a full game
-train_episodes = 300
+train_episodes = 50000
 test_episodes = 100
 
 def agent(state_shape, action_shape):
@@ -131,7 +131,15 @@ def main():
             total_training_rewards += reward
 
             if done:
+                with open('minDQ.txt', 'a') as file:
+                        file.write(str(total_training_rewards) + "\n")
                 print('Total training rewards: {} after n steps = {} with final reward = {}'.format(total_training_rewards, episode, reward))
+                
+                if total_training_rewards > 500:
+                        model.save('trained_model.h5')  # Save the model as an HDF5 file
+                        print('Model saved because total training rewards exceeded 500')
+                        exit
+                
                 total_training_rewards += 1
 
                 if steps_to_update_target_model >= 100:

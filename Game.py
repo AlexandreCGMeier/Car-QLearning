@@ -425,7 +425,7 @@ class Car:
             pass
         totalReward = 0
 
-        for i in range(1):
+        for _ in range(1):
             if not self.dead:
                 self.lifespan+=1
                 self.move()

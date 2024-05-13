@@ -150,6 +150,7 @@ for episode in range(HM_EPISODES):
         if show:
             env = np.zeros((SIZE, SIZE, 3), dtype=np.uint8)  # starts an rbg of our size
             env[food.x][food.y] = d[FOOD_N]  # sets the food location tile to green color
+            time.sleep(0.3)
             env[player.x][player.y] = d[PLAYER_N]  # sets the player tile to blue
             env[enemy.x][enemy.y] = d[ENEMY_N]  # sets the enemy location to red
             img = Image.fromarray(env, 'RGB')  # reading to rgb. Apparently. Even tho color definitions are bgr. ???
