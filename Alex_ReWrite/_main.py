@@ -24,7 +24,7 @@ class Game:
         #glPushMatrix()
         self.trackSprite.draw()
         self.car.carSprite.draw()
-        self.car.setWalls()
+        #self.car.setWalls()
         self.renderWalls()
         self.renderRewardGates()
         #glPopMatrix()
