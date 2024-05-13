@@ -8,6 +8,8 @@ from ShapeObjects import Line
 from pyglet.window import key
 import math, random, time, os
 
+# SINUS ist Gegenkathete!!
+
 drawer = Drawer()
 vec2 = pygame.math.Vector2
 
@@ -27,7 +29,14 @@ class Game:
         #self.car.setWalls()
         self.renderWalls()
         self.renderRewardGates()
+        self.renderVisionVectors()
         #glPopMatrix()
+
+    def renderVisionVectors(self):
+        self.car.visionVector = []
+        self.car.setVisionVector()
+        for visionGate in self.car.visionVector:
+            visionGate.line.draw()
 
     def renderWalls(self):
         for wall in self.car.walls:
@@ -58,12 +67,14 @@ class Car:
         self.carPic.anchor_x = self.carPic.width//2
         self.carPic.anchor_y = self.carPic.height//2
         self.carSprite = pyglet.sprite.Sprite(self.carPic, x=self.x, y=self.y)
+        self.carSprite.opacity =80
         self.carSprite.update(rotation=0, scale_x=self.width / self.carSprite.width,
                                 scale_y=self.height / self.carSprite.height)
         self.accInc = 2
         self.maxVelocity = 20
 
-        self.speedVec = [0,100/180*math.pi] # [amplitude, angle]
+        #self.speedVec = [0,100/180*math.pi] # [amplitude, angle]
+        self.speedVec = [0,90/180*math.pi] # [amplitude, angle]
         self.acceleration = [0,0] # [-1,1] means Deceleration and Left, [0,-1] means No Speed Delta and Right
 
         self.walls = []
@@ -71,29 +82,50 @@ class Car:
 
         self.rewardGates = []
         self.setRewardGates()
+        
+        self.visionVector = []
+        self.setVisionVector()
 
-        self.speedVec = [0,100/180*math.pi] # [amplitude, angle]
-        self.acceleration = [0,0] # [-1,1] means Deceleration and Left, [0,-1] means No Speed Delta and Right
+        #self.speedVec = [0,100/180*math.pi] # [amplitude, angle]
+        #self.acceleration = [0,0] # [-1,1] means Deceleration and Left, [0,-1] means No Speed Delta and Right
         
         self.reward = 0
         self.isDead = False
 
+    def setVisionVector(self):
+        
+        self.visionVector = []
+        angle_car = self.speedVec[1]
+        front_x = self.x+math.cos(angle_car)*self.width/2
+        front_y = self.y+math.sin(angle_car)*self.width/2
+
+        x1 = front_x
+        y1 = front_y #print(front_x, front_y) front_y is really Y-Coordinate, and vice versa for front_x
+        x2,y2 = self.getDeltasforVision(self.speedVec[1]+0/180*math.pi,100)
+        self.visionVector.append(Wall(x1, y1, x1+x2,y1+y2))
+
+        x2 = front_x + 3*math.sin(math.pi- angle_car)
+        y2 = front_y + 3*math.cos(math.pi- angle_car)
+        deltaX,deltaY = self.getDeltasforVision(self.speedVec[1]-30/180*math.pi,100)
+        self.visionVector.append(Wall(x2, y2, x2+deltaX,y2+deltaY))
+
+        x3 = front_x - 3*math.sin(math.pi- angle_car)
+        y3 = front_y - 3*math.cos(math.pi- angle_car)
+        deltaX,deltaY = self.getDeltasforVision(self.speedVec[1]+30/180*math.pi,100)
+        self.visionVector.append(Wall(x3, y3, x3+deltaX,y3+deltaY))
+        # x3 = self.x + 4
+        # y3 = self.y+self.width/2
+        # x4,y4 = self.getDeltasforVision(self.speedVec[1]-30/180*math.pi,100)
+        # self.visionVector.append(Wall(x3, y3, x3+x4,y3+y4))
+
     def setWalls(self):
         self.walls.append(Wall(226, 366, 104, 369))
-        x2,y2 = self.getDeltasforVision(self.speedVec[1]+0/180*math.pi,100)
-        x1 = self.x-4
-        y1 = self.y+self.width/2
-        self.walls.append(Wall(x1, y1, x1+x2,y1+y2))
-        x2 = self.x-8
-        y2 = self.y+self.width/2
-        x3,y3 = self.getDeltasforVision(self.speedVec[1]+30/180*math.pi,100)
-        self.walls.append(Wall(x2, y2, x2+x3,y2+y3))
-        x3 = self.x
-        y3 = self.y+self.width/2
-        x4,y4 = self.getDeltasforVision(self.speedVec[1]-30/180*math.pi,100)
-        self.walls.append(Wall(x3, y3, x3+x4,y3+y4))
+        
 
     def getDeltasforVision(self,angle, length):
+        # Considering the normal axis of the car, give me arbitrary deltaX and deltaY
+        # for a vector with length length and  angle angle
+        # Tuple returned can be used to define Vision Vector Coordinates
         x = math.cos(angle)*length
         y = math.sin(angle)*length
         return (x,y)
@@ -117,7 +149,7 @@ class Car:
                 a = self.speedVec[0]
                 self.speedVec[0] = a/abs(a)*self.maxVelocity #Cheeky bastard can't cheat by going backwards
         else:
-            self.speedVec[0] *= 0.99
+            self.speedVec[0] *= 0.90
 
         # CHANGE IN POSITION        
         deltaX, deltaY = self.polar_to_cartesian(self.speedVec)     
@@ -147,7 +179,7 @@ class Car:
         self.checkRewardGateHit()
         self.calcCollisionDistances()
         self.calcRewardGateDistance()
-        self.carSprite.update(rotation=(-58)*self.speedVec[1], x=self.x, y=self.y)
+        self.carSprite.update(rotation=self.speedVec[1]/(2*math.pi)*-360, x=self.x, y=self.y)
         if self.isDead:
             return
         else:
