@@ -45,37 +45,23 @@ decay_rate = 0.0001 # exponential decay rate for exploration prob
 # Q LEARNING hyperparameters
 gamma = 0.95  # Discounting rate
 
-### MEMORY HYPERPARAMETERS
-## If you have GPU change to 1million
-memory_size = 100000  # Number of experiences the Memory can keep #100000
-pretrain_length = memory_size  # Number of experiences stored in the Memory when initialized for the first time
 
 ### MODIFY THIS TO FALSE IF YOU JUST WANT TO SEE THE TRAINED AGENT
 training =  False
 load = True
 starting_episode = 6208
 load_traing_model = True
+
 load_training_model_number = starting_episode
 
-# Reset the graph
 tf.compat.v1.reset_default_graph()
-
-# Instantiate the DQNetwork
 DQNetwork = DDDQNNet(state_size, action_size, learning_rate, name="DQNetwork")
-
-# Instantiate the target network
 TargetNetwork = DDDQNNet(state_size, action_size, learning_rate, name="TargetNetwork")
-
-# Instantiate memory
-memory = Memory(memory_size)
-
-# Render the environment
 game.new_episode()
 
 
 
 def predict_action(explore_start, explore_stop, decay_rate, decay_step, state, actions):
-
     exp_exp_tradeoff = np.random.rand()
     explore_probability = explore_stop + (explore_start - explore_stop) * np.exp(-decay_rate * decay_step)
     if (explore_probability > exp_exp_tradeoff):
@@ -123,15 +109,12 @@ class MyWindow(pyglet.window.Window):
             self.sess.saver.restore(self.sess, directory)
 
     def on_mouse_press(self, x, y, button, modifiers):
-        # print(x,y)
         if self.firstClick:
             self.clickPos = [x, y]
         else:
             print("self.gates.append(RewardGate({}, {}, {}, {}))".format(self.clickPos[0],
                                                                    displayHeight - self.clickPos[1],
                                                                    x, displayHeight - y))
-        
-            self.gates.append(RewardGate(self.clickPos[0], self.clickPos[1], x, y))
 
     def on_draw(self):
         game.render()
@@ -156,8 +139,6 @@ class MyWindow(pyglet.window.Window):
             action = possible_actions[int(choice)]
 
         reward = game.make_action(action)
-        
-        # game.render()
         done = game.is_episode_finished()
 
         if done:
@@ -166,7 +147,6 @@ class MyWindow(pyglet.window.Window):
         else:
             self.next_state = game.get_state()
             self.state = self.next_state
-
 
 window = MyWindow(displayWidth, displayHeight, "AI Learns to Drive", resizable=False)
 pyglet.clock.schedule_interval(window.update, 1 / frameRate)

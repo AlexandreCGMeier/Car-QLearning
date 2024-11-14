@@ -111,13 +111,19 @@ class MyWindow(pyglet.window.Window):
 
     def on_mouse_press(self, x, y, button, modifiers):
         # print(x,y)
+        mode = "RewardGate"
         if self.firstClick:
             self.clickPos = [x, y]
             self.firstClick = not self.firstClick
         else:
-            print("self.gates.append(RewardGate({}, {}, {}, {}))".format(self.clickPos[0],
-                                                                   displayHeight - self.clickPos[1],
-                                                                   x, displayHeight - y))
+            if mode != "RewardGate":
+                print("self.walls.append(Wall({}, {}, {}, {}))".format(self.clickPos[0],
+                                                                    displayHeight - self.clickPos[1],
+                                                                    x, displayHeight - y))
+            else:
+                print("self.gates.append(RewardGate({}, {}, {}, {}))".format(self.clickPos[0],
+                                                                    self.clickPos[1],
+                                                                    x, y))
             self.firstClick = not self.firstClick
             # self.gates.append(RewardGate(self.clickPos[0], self.clickPos[1], x, y))
 

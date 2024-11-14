@@ -40,27 +40,18 @@ max_tau = 7000  # Tau is the C step where we update our target network
 # EXPLORATION HYPERPARAMETERS for epsilon greedy strategy
 explore_start = 1.0  # exploration probability at start, CHANGED THIS AS WE START WITH ADVANCED MODEL
 explore_stop = 0.1  # minimum exploration probability
-decay_rate = 0.0005 # exponential decay rate for exploration prob
+decay_rate = 0.00025 # exponential decay rate for exploration prob
 gamma = 0.95  # Discounting rate
 
 ## GPU: 1million, CPU: 100_000
 memory_size = 100_000
 
-### MODIFY THIS TO FALSE IF YOU JUST WANT TO SEE THE TRAINED AGENT
-metaTraining = True
-real_load_training_model_number = 0
+# Set this to zero if you want to start a new run. 
+load_training_model_number = 8575
 
-if metaTraining:
-    training =  True
-    load = False
-    starting_episode = real_load_training_model_number #This is considered in how many more episodes should be run
-    load_training_model_number = real_load_training_model_number
-else:
-    training =  False
-    load = True
-    starting_episode = real_load_training_model_number
-    load_traing_model = True
-    load_training_model_number = real_load_training_model_number
+load = False if load_training_model_number == 0 else True
+starting_episode = load_training_model_number #This is considered in how many more episodes should be run
+load_training_model_number = load_training_model_number
 
 def clear_console():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -122,7 +113,7 @@ with tf.compat.v1.Session() as sess:
     else:
         sess.run(tf.compat.v1.global_variables_initializer())
 
-    decay_step = real_load_training_model_number
+    decay_step = load_training_model_number
     tau = 0
     game.new_episode()
     game.highScore = 0

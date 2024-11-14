@@ -94,9 +94,9 @@ class Game:
         self.gates.append(RewardGate(393, 251, 449, 244))
         self.gates.append(RewardGate(417, 197, 460, 235))
         self.gates.append(RewardGate(473, 194, 475, 241))
-        self.gates.append(RewardGate(509, 206, 501, 235))
-        self.gates.append(RewardGate(538, 204, 536, 242))
-        self.gates.append(RewardGate(574, 207, 560, 237))
+        self.gates.append(RewardGate(509, 180, 501, 235)) # SHORT
+        self.gates.append(RewardGate(538, 190, 536, 242))
+        self.gates.append(RewardGate(574, 190, 560, 237))
         self.gates.append(RewardGate(624, 208, 612, 243))
         self.gates.append(RewardGate(646, 206, 636, 246))
         self.gates.append(RewardGate(684, 212, 672, 250))
@@ -394,9 +394,9 @@ class Car:
         if self.vel < 0.1:
             self.rewardPenalty = -3
         if self.rewardGates[self.rewardNo].hitCar(self):
-            #print("Hit a gate!")
             self.rewardGates[self.rewardNo].active = False
             self.rewardNo += 1
+            #print(self.rewardNo)
             if self.rewardNo >= len(self.rewardGates):
                 self.rewardNo = 0
                 for g in self.rewardGates:
@@ -496,6 +496,7 @@ class Car:
 
     def getState(self):
         self.setVisionVectors()
+        
         normalizedVisionVectors = [1 - (max(1.0, line) / self.vectorLength) for line in self.collisionLineDistances]
         normalizedForwardVelocity = max(0.0, self.vel / self.maxSpeed)
         normalizedReverseVelocity = max(0.0, self.vel / self.maxReverseSpeed)
@@ -505,17 +506,13 @@ class Car:
         else:
             normalizedPosDrift = 0
             normalizedNegDrift = self.driftMomentum / -5
-
         normalizedAngleOfNextGate = (get_angle(self.direction) - get_angle(self.directionToRewardGate)) % 360
         if normalizedAngleOfNextGate > 180:
             normalizedAngleOfNextGate = -1 * (360 - normalizedAngleOfNextGate)
-
         normalizedAngleOfNextGate /= 180
 
         normalizedState = [*normalizedVisionVectors, normalizedForwardVelocity, normalizedReverseVelocity,
                            normalizedPosDrift, normalizedNegDrift, normalizedAngleOfNextGate]
-
-        # normalizedState = [*normalizedVisionVectors, normalizedForwardVelocity, normalizedPosDrift, normalizedNegDrift, normalizedAngleOfNextGate]
         return np.array(normalizedState)
 
     def setVisionVectors(self):
