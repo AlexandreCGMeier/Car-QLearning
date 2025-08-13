@@ -1,75 +1,63 @@
 # Car-QLearning
 
-Requirements (versions are mostly here as an indication):
+## 07/11/24
 
-```
-Pyglet (1.5.27)
-Pygame (2.1.3)
-numpy (1.24.1)
-tensorflow (2.10.1) (no 1.X tensorflow)
-```
+Reward is now reset after every step instead of after every episode! Deep Q requires this. Previously, reward was Car-Property and increased cumulatively across episode. Deep Q only inputs state and that's it. Adjusted that. We might need to scale reward with decreasing distance towards RewardGate. Additionally, we increased range for "accepted" speeds which could lead to penalties. Exploration decay now scales with episode instead of step.
 
-How to use : 
+IT'S SOLVED. 6280 Episodes later and our guy flies.
 
-I) Download the files 
+## 21/05/24
 
+Experiment 1 - Assess Environment Performance: Make every choice random (therefore disabling model) and output fps, take away rendering and output fps. Paperspace maxes out at 60fps using random choice and no rendering. Similar to XPS13. Rendering decreases this number from 60 to 45-ish. Random choice experiment can be by changing comments from "Render_QLearningOldMate.py".
 
-II) If you want to create your own track
+Experiment 2 - Assess performance of device by taking given environment: Compare with "optimised environment" gum.env "Cartpole-v1" as used in minDQ implementation. We get 40fps on XPS13, but only 25 on paperspace. There seems to be something odd happening.
 
+Conclusion from Exp1,2: Bottleneck for model performance is probably the reward structure of the environment, as opposed not enough training. Potential ideas are two-pronged: Either more thought through reward structure or more inputs for the model.
 
-1) Create your own .png file (I recommend not to change size if you don't want to touch the code).
-When you are done name it track.png. 
+Reward Structure:
 
-3) Once done designing, in Games_Solo.py empty the set_wall function and the set-gates function but leave this line in set_gates :
-  self.gates.append(RewardGate(0, 1, 2, 3))
+- Distance to Reward Gate and associated decrease (Integral over distance).
+- Distance to Wall and penalising when falling below a threshold.
 
-4) You can now run Main_Solo.py program, you should see you track
+Streamlining State Description:
 
-5) Time to set up the gates. You can setup gates using your mouse left click. These gate are where the AI gain points. Once you are done close the program you should see in the console a lot of text similar to :
-```
-self.gates.append(RewardGate(343, 379, 524, 405))
-self.gates.append(RewardGate(488, 326, 626, 421))
-self.gates.append(RewardGate(626, 309, 701, 411))
-self.gates.append(RewardGate(232, 309, 267, 399))
-```
-Copy this text and paste it in the set_gates function you emptied earlier. Be careful the order of the gates is important.
+- Add new variables (Distance to Reward Gate)
+- Remove redundant ones (Negative Velocity Vector)
 
-6) Time to set up the Walls. In the Main_Solo.py program go to the "on_mouse_press" function then swap the lines in comments and the one that are not. You should get:
+GENERAL Idea: Make a manual driven mode, that outputs the reward of a run to detect bugs and "get a feel" for env.
 
-```
-    def on_mouse_press(self, x, y, button, modifiers):
-        if self.firstClick:
-            self.clickPos = [x, y]
-        else:
-            #print("self.gates.append(RewardGate({}, {}, {}, {}))".format(self.clickPos[0],displayHeight - self.clickPos[1],x, displayHeight - y))
-            #self.game.gates.append(RewardGate(self.clickPos[0], displayHeight - self.clickPos[1], x, displayHeight - y))
+## UPDATE 12/05/2024
 
-            print("self.walls.append(Wall({}, {}, {}, {}))".format(self.clickPos[0],displayHeight - self.clickPos[1],x, displayHeight - y))
-            self.game.walls.append(Wall(self.clickPos[0], self.clickPos[1], x, y))
+I've partially re-written the game now. It's rather simple. Game and Pyglet are nested, so it's difficult to get it to run on the server. We could probably introduce a mode where we don't do any graphics, but model the game as a purely 2D Matrix, where we have step, state, step, state, ... sequence. This way we could leverage strong server architecture.
+Pyglet is stuck at lower than v2.0 because of Shader Magic I don't want to implement.
+From the AI's perspective the game is abstracted to step, reset and observe. So once the environment is defined, many architectures can be implemented very easily.
 
-        self.firstClick = not self.firstClick
-        pass
-        
-```
-You can now setup walls using your mouse left click. Once you are done close the program you should see in the console a lot of text similar to before but saying :
+## How to install packages
 
-```
-self.walls.append(Wall(343, 379, 524, 405)) ...
-```
+In this folder activate venv, pip in venv.
 
-Once again copy this text and paste it in the set_walls function of Games_Solo.py.
+## How to instantiate VENV
 
-7) Change the start and reset position/direction of the car in Games_Solo.py in the car class in the __init__ function and in the reset function (change self.x, self.y)
+C:\Users\Alex\AppData\Local\Programs\Python\Python39\python.exe -m venv venv
 
-8) Check everything is good by trying your track in the Main_Solo program you should die if you touch the walls and you should see gates disappear when passing them (if not you probably didn't placed the in the right order)
+## Powershell Policy Adaptation (start PS as Admin)
 
-9) copy your set_walls and set_gates function into the Games.py by replacing the old one. (don't forget to change your start and reset position/direction too)
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
-10) You are now done creating your personal track.
+## Update pip
 
+C:\Users\Alex\Documents\GitHub\Car-QLearning\venv\bin\python.exe -m pip install --upgrade pip
 
-III) You now want to train the AI to perform on your track so run the Main.py program. You should see the the car moving on it's own and learning slowly the track.
+## Requires Python 3.9 because of PyGame, that doesn't support 3.10 yet (14/05/22)
 
-PS : It seems that the load or save fuction aren't working properly so don't close your program until your are satisfied =) (I personally got result at around Model 5000 so be patient)
+## Strategies
 
-If you need some help you can contact me by discord at Aquinox#4429. I'll try to help you as best as I can.
+# 1: Plug in different DDQN algorithm.
+
+Understand environment defined by CB (reward, punishment, episode, session cycle) and adapt. Now it's kind of a mess, study specification of a "good" environment and shape according to it.
+
+# 2: Make it work
+
+main.py at this points calculates something but doesn't render. QLearningFromMate.py renders but doesn't calculate. However, QLearningFromMate is the working approach as of now. Combine both to get a working thing. Potentially difficult because Game, AI and Render Logic is nested.
+
+IDEA Regarding 2: Make MyWindowClass in QLearningFromOldMate and see whether it still renders. If yes, then render issue from main.py might be easily resolvable.

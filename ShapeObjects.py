@@ -2,9 +2,6 @@ import pyglet
 from pyglet.gl import *
 import math
 
-
-
-
 class Triangle:
     def __init__(self, x1, y1, x2, y2, x3, y3, col=[255, 255, 255]):
         self.vertices = pyglet.graphics.vertex_list(3, ('v3f', [x1, y1, 0, x2, y2, 0, x3, y3, 0]),
@@ -34,7 +31,6 @@ class Rect:
         pyglet.graphics.draw_indexed(4, pyglet.gl.GL_TRIANGLES, [0, 1, 2, 0, 2, 3],
                                      ('v2f', [x, y, x + w, y, x + w, y + h, x, y + h]),
                                      ('c3B', self.col))
-
 
 class Line:
     def __init__(self, x1, y1, x2, y2):
