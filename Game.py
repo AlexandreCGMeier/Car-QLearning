@@ -1,6 +1,6 @@
 import numpy as np
-from Global import *
-from Draw import Drawer
+from Globals import *
+from Drawer import Drawer
 from ShapeObjects import *
 from PygameAdditionalMethods import *
 import pygame
@@ -15,6 +15,7 @@ class Game:
     def __init__(self):
         trackImg = pyglet.image.load('Track.png')
         self.trackSprite = pyglet.sprite.Sprite(trackImg, x=0, y=0)
+        self.trackSprite.scale = displayHeight / trackImg.height
 
         # initiate walls
         self.walls = []
@@ -27,110 +28,138 @@ class Game:
         self.car = Car(self.walls, self.gates)
 
     def set_walls(self):
-        self.walls.append(Wall(240, 809, 200, 583))
-        self.walls.append(Wall(200, 583, 218, 395))
-        self.walls.append(Wall(218, 395, 303, 255))
-        self.walls.append(Wall(303, 255, 548, 173))
-        self.walls.append(Wall(548, 173, 764, 179))
-        self.walls.append(Wall(764, 179, 1058, 198))
-        self.walls.append(Wall(1055, 199, 1180, 215))
-        self.walls.append(Wall(1177, 215, 1220, 272))
-        self.walls.append(Wall(1222, 273, 1218, 367))
-        self.walls.append(Wall(1218, 367, 1150, 437))
-        self.walls.append(Wall(1150, 437, 1044, 460))
-        self.walls.append(Wall(1044, 460, 757, 600))
-        self.walls.append(Wall(757, 600, 1099, 570))
-        self.walls.append(Wall(1100, 570, 1187, 508))
-        self.walls.append(Wall(1187, 507, 1288, 443))
-        self.walls.append(Wall(1288, 443, 1463, 415))
-        self.walls.append(Wall(1463, 415, 1615, 478))
-        self.walls.append(Wall(1617, 479, 1727, 679))
-        self.walls.append(Wall(1727, 679, 1697, 874))
-        self.walls.append(Wall(1694, 872, 1520, 964))
-        self.walls.append(Wall(1520, 964, 1100, 970))
-        self.walls.append(Wall(1105, 970, 335, 960))
-        self.walls.append(Wall(339, 960, 264, 899))
-        self.walls.append(Wall(263, 897, 238, 803))
-        self.walls.append(Wall(317, 782, 274, 570))
-        self.walls.append(Wall(275, 569, 284, 407))
-        self.walls.append(Wall(284, 407, 363, 317))
-        self.walls.append(Wall(363, 317, 562, 240))
-        self.walls.append(Wall(562, 240, 1114, 284))
-        self.walls.append(Wall(1114, 284, 1120, 323))
-        self.walls.append(Wall(1120, 323, 1045, 377))
-        self.walls.append(Wall(1045, 378, 682, 548))
-        self.walls.append(Wall(682, 548, 604, 610))
-        self.walls.append(Wall(604, 612, 603, 695))
-        self.walls.append(Wall(605, 695, 702, 713))
-        self.walls.append(Wall(703, 712, 1128, 642))
-        self.walls.append(Wall(1129, 642, 1320, 512))
-        self.walls.append(Wall(1323, 512, 1464, 497))
-        self.walls.append(Wall(1464, 497, 1579, 535))
-        self.walls.append(Wall(1579, 535, 1660, 701))
-        self.walls.append(Wall(1660, 697, 1634, 818))
-        self.walls.append(Wall(1634, 818, 1499, 889))
-        self.walls.append(Wall(1499, 889, 395, 883))
-        self.walls.append(Wall(395, 883, 330, 838))
-        self.walls.append(Wall(330, 838, 315, 782))
-        self.walls.append(Wall(319, 798, 306, 725))
-        self.walls.append(Wall(276, 580, 277, 543))
-        self.walls.append(Wall(603, 639, 622, 590))
-        self.walls.append(Wall(599, 655, 621, 704))
-        self.walls.append(Wall(1074, 571, 1115, 558))
-        self.walls.append(Wall(1314, 516, 1333, 511))
-        self.walls.append(Wall(1692, 875, 1706, 830))
-        self.walls.append(Wall(277, 912, 255, 872))
-        self.walls.append(Wall(1214, 262, 1225, 288))
-        self.walls.append(Wall(1601, 470, 1625, 490))
-        self.walls.append(Wall(1119, 644, 1139, 634))
-        self.walls.append(Wall(687, 710, 719, 710))
-        self.walls.append(Wall(1721, 664, 1727, 696))
-        self.walls.append(Wall(1015, 392, 1065, 362))
-        self.walls.append(Wall(1091, 572, 1104, 568))
-        self.walls.append(Wall(1157, 528, 1233, 478))
+        self.walls.append(Wall(149, 456, 142, 412))
+        self.walls.append(Wall(143, 411, 145, 361))
+        self.walls.append(Wall(146, 360, 149, 302))
+        self.walls.append(Wall(150, 301, 165, 254))
+        self.walls.append(Wall(166, 253, 188, 211))
+        self.walls.append(Wall(189, 210, 210, 178))
+        self.walls.append(Wall(211, 177, 260, 163))
+        self.walls.append(Wall(261, 162, 337, 137))
+        self.walls.append(Wall(338, 136, 381, 122))
+        self.walls.append(Wall(382, 121, 507, 125))
+        self.walls.append(Wall(508, 124, 620, 131))
+        self.walls.append(Wall(621, 130, 822, 153))
+        self.walls.append(Wall(823, 152, 845, 175))
+        self.walls.append(Wall(846, 174, 859, 203))
+        self.walls.append(Wall(860, 202, 854, 246))
+        self.walls.append(Wall(855, 245, 835, 279))
+        self.walls.append(Wall(836, 278, 808, 302))
+        self.walls.append(Wall(809, 301, 733, 322))
+        self.walls.append(Wall(734, 321, 531, 422))
+        self.walls.append(Wall(532, 421, 775, 396))
+        self.walls.append(Wall(776, 395, 891, 319))
+        self.walls.append(Wall(892, 318, 936, 303))
+        self.walls.append(Wall(937, 302, 1022, 292))
+        self.walls.append(Wall(1023, 291, 1105, 324))
+        self.walls.append(Wall(1106, 323, 1143, 353))
+        self.walls.append(Wall(1144, 352, 1187, 434))
+        self.walls.append(Wall(1188, 433, 1209, 491))
+        self.walls.append(Wall(1210, 490, 1179, 617))
+        self.walls.append(Wall(1180, 616, 1130, 647))
+        self.walls.append(Wall(1131, 646, 1057, 675))
+        self.walls.append(Wall(1058, 674, 246, 671))
+        self.walls.append(Wall(247, 670, 190, 630))
+        self.walls.append(Wall(191, 629, 160, 518))
+        self.walls.append(Wall(161, 517, 143, 417))
+        self.walls.append(Wall(144, 416, 144, 384))
+        self.walls.append(Wall(207, 477, 199, 416))
+        self.walls.append(Wall(200, 415, 196, 331))
+        self.walls.append(Wall(197, 330, 204, 285))
+        self.walls.append(Wall(205, 284, 251, 228))
+        self.walls.append(Wall(252, 227, 308, 201))
+        self.walls.append(Wall(309, 200, 394, 170))
+        self.walls.append(Wall(395, 169, 771, 202))
+        self.walls.append(Wall(772, 201, 779, 214))
+        self.walls.append(Wall(780, 213, 774, 233))
+        self.walls.append(Wall(775, 232, 729, 266))
+        self.walls.append(Wall(730, 265, 473, 387))
+        self.walls.append(Wall(474, 386, 429, 426))
+        self.walls.append(Wall(430, 425, 424, 462))
+        self.walls.append(Wall(425, 461, 432, 488))
+        self.walls.append(Wall(433, 487, 492, 500))
+        self.walls.append(Wall(493, 499, 796, 449))
+        self.walls.append(Wall(797, 448, 923, 362))
+        self.walls.append(Wall(924, 361, 1026, 350))
+        self.walls.append(Wall(1027, 349, 1105, 379))
+        self.walls.append(Wall(1106, 378, 1161, 494))
+        self.walls.append(Wall(1162, 493, 1142, 571))
+        self.walls.append(Wall(1143, 570, 1051, 623))
+        self.walls.append(Wall(1052, 622, 287, 619))
+        self.walls.append(Wall(288, 618, 237, 592))
+        self.walls.append(Wall(238, 591, 222, 548))
+        self.walls.append(Wall(223, 547, 196, 407))
 
     def set_gates(self):
-
-        self.gates.append(RewardGate(212, 645, 288, 634))
-        self.gates.append(RewardGate(206, 518, 279, 526))
-        self.gates.append(RewardGate(224, 390, 286, 416))
-        self.gates.append(RewardGate(302, 261, 369, 314))
-        self.gates.append(RewardGate(545, 175, 561, 236))
-        self.gates.append(RewardGate(846, 182, 841, 259))
-        self.gates.append(RewardGate(1114, 203, 1100, 282))
-        self.gates.append(RewardGate(1217, 297, 1113, 300))
-        self.gates.append(RewardGate(1185, 403, 1102, 339))
-        self.gates.append(RewardGate(1042, 462, 979, 408))
-        self.gates.append(RewardGate(876, 543, 807, 482))
-        self.gates.append(RewardGate(765, 598, 693, 545))
-        self.gates.append(RewardGate(801, 596, 815, 694))
-        self.gates.append(RewardGate(883, 587, 904, 680))
-        self.gates.append(RewardGate(1102, 567, 1128, 640))
-        self.gates.append(RewardGate(1261, 452, 1304, 514))
-        self.gates.append(RewardGate(1461, 412, 1454, 499))
-        self.gates.append(RewardGate(1615, 480, 1572, 535))
-        self.gates.append(RewardGate(1722, 680, 1655, 698))
-        self.gates.append(RewardGate(1693, 873, 1623, 815))
-        self.gates.append(RewardGate(1510, 966, 1495, 886))
-        self.gates.append(RewardGate(1297, 970, 1282, 888))
-        self.gates.append(RewardGate(1054, 971, 1045, 887))
-        self.gates.append(RewardGate(925, 969, 907, 885))
-        self.gates.append(RewardGate(742, 969, 733, 884))
-        self.gates.append(RewardGate(549, 965, 537, 880))
-        self.gates.append(RewardGate(295, 920, 361, 864))
-        self.gates.append(RewardGate(238, 766, 309, 754))
+        self.gates.append(RewardGate(195, 363, 144, 372))
+        self.gates.append(RewardGate(199, 333, 145, 322))
+        self.gates.append(RewardGate(203, 298, 162, 272))
+        self.gates.append(RewardGate(235, 252, 183, 220))
+        self.gates.append(RewardGate(283, 212, 258, 163))
+        self.gates.append(RewardGate(338, 190, 314, 146))
+        self.gates.append(RewardGate(382, 176, 364, 130))
+        self.gates.append(RewardGate(452, 174, 458, 129))
+        self.gates.append(RewardGate(557, 182, 564, 133))
+        self.gates.append(RewardGate(666, 194, 674, 143))
+        self.gates.append(RewardGate(751, 202, 769, 145))
+        self.gates.append(RewardGate(778, 214, 832, 168))
+        self.gates.append(RewardGate(773, 232, 844, 265))
+        self.gates.append(RewardGate(742, 257, 778, 310))
+        self.gates.append(RewardGate(674, 293, 703, 331))
+        self.gates.append(RewardGate(627, 320, 645, 362))
+        self.gates.append(RewardGate(569, 343, 593, 390))
+        self.gates.append(RewardGate(523, 368, 548, 411))
+        self.gates.append(RewardGate(520, 427, 453, 438))
+        self.gates.append(RewardGate(517, 477, 542, 434))
+        self.gates.append(RewardGate(589, 475, 583, 430))
+        self.gates.append(RewardGate(661, 465, 654, 428))
+        self.gates.append(RewardGate(738, 451, 733, 412))
+        self.gates.append(RewardGate(797, 438, 776, 408))
+        self.gates.append(RewardGate(854, 400, 824, 374))
+        self.gates.append(RewardGate(894, 378, 861, 350))
+        self.gates.append(RewardGate(926, 359, 909, 323))
+        self.gates.append(RewardGate(962, 351, 958, 311))
+        self.gates.append(RewardGate(1017, 345, 1018, 295))
+        self.gates.append(RewardGate(1051, 352, 1061, 315))
+        self.gates.append(RewardGate(1088, 371, 1111, 331))
+        self.gates.append(RewardGate(1113, 397, 1153, 384))
+        self.gates.append(RewardGate(1136, 440, 1176, 417))
+        self.gates.append(RewardGate(1150, 476, 1199, 460))
+        self.gates.append(RewardGate(1154, 522, 1198, 540))
+        self.gates.append(RewardGate(1144, 557, 1191, 577))
+        self.gates.append(RewardGate(1128, 586, 1157, 628))
+        self.gates.append(RewardGate(1095, 602, 1109, 649))
+        self.gates.append(RewardGate(1054, 628, 1057, 669))
+        self.gates.append(RewardGate(1003, 629, 1002, 675))
+        self.gates.append(RewardGate(924, 628, 924, 665))
+        self.gates.append(RewardGate(835, 626, 832, 676))
+        self.gates.append(RewardGate(768, 627, 766, 668))
+        self.gates.append(RewardGate(699, 624, 700, 677))
+        self.gates.append(RewardGate(607, 625, 605, 670))
+        self.gates.append(RewardGate(539, 624, 536, 669))
+        self.gates.append(RewardGate(480, 626, 479, 674))
+        self.gates.append(RewardGate(429, 629, 420, 672))
+        self.gates.append(RewardGate(379, 621, 374, 676))
+        self.gates.append(RewardGate(339, 623, 324, 664))
+        self.gates.append(RewardGate(290, 622, 242, 661))
+        self.gates.append(RewardGate(260, 607, 199, 638))
+        self.gates.append(RewardGate(231, 576, 187, 587))
+        self.gates.append(RewardGate(221, 539, 162, 542))
+        self.gates.append(RewardGate(213, 490, 158, 504))
+        self.gates.append(RewardGate(204, 461, 151, 467))
+        self.gates.append(RewardGate(199, 415, 144, 432))
 
     def new_episode(self):
         self.car.reset()
 
     def get_state(self):
         return self.car.getState()
-        pass
 
     def make_action(self, action):
         # returns reward
         #actionNo = np.argmax(action)
-        self.car.updateWithAction(action)
+        actionNo = int(np.argmax(action)) if isinstance(action, (list, np.ndarray)) else int(action)
+        self.car.updateWithAction(actionNo)
         return self.car.reward
 
     def is_episode_finished(self):
@@ -146,12 +175,11 @@ class Game:
         glPushMatrix()
         self.trackSprite.draw()
 
-        for w in self.walls:
-            w.draw()
+        # for w in self.walls:
+        #     w.draw()
         for g in self.gates:
             g.draw()
         self.car.show()
-        #self.car.showCollisionVectors()
 
         glPopMatrix()
 
@@ -165,7 +193,7 @@ class Wall:
         self.y2 = displayHeight - y2
 
         self.line = Line(self.x1, self.y1, self.x2, self.y2)
-        self.line.setLineThinkness(5)
+        self.line.setLineThinkness(3)
         self.line.setColor([255, 0, 0])
 
     """
@@ -195,14 +223,9 @@ class Wall:
             j = j % 4
             if linesCollided(self.x1, self.y1, self.x2, self.y2, carCorners[i].x, carCorners[i].y, carCorners[j].x,
                              carCorners[j].y):
-                #print("u ded")
                 return True
         return False
 
-
-"""
-class containing all the game logic for moving and displaying the car
-"""
 
 
 class RewardGate:
@@ -265,17 +288,17 @@ class Car:
         global vec2
         self.nbVect = 16
         self.angles = np.linspace(-180, 180, self.nbVect)
-        self.x = 258
+        self.x = 172
         self.y = 288
         self.vel = 0
         self.direction = vec2(0, 1)
         self.direction = self.direction.rotate(180 / 12)
         self.acc = 0
-        self.width = 40
-        self.height = 20
+        self.width = 25
+        self.height = 15
         self.turningRate = 5.0 / self.width
         self.friction = 0.98
-        self.maxSpeed = self.width / 4.0
+        self.maxSpeed = self.width / 2.0
         self.maxReverseSpeed = self.maxSpeed / 16.0   #used as a minimum for speed
         self.accelerationSpeed = self.width / 160.0
         self.dead = False
@@ -301,16 +324,16 @@ class Car:
         self.directionToRewardGate = self.rewardGates[self.rewardNo].center - vec2(self.x, self.y)
 
         self.reward = 0
-
         self.score = 0
         self.lifespan = 0
+        self._delta_s = 0.0  # forward progress (pixels) toward the current gate during the last step
     """
     draws the car to the screen
     """
 
     def reset(self):
         global vec2
-        self.x = 258
+        self.x = 172
         self.y = 288
         self.vel = 0
         self.direction = vec2(0, 1)
@@ -327,6 +350,7 @@ class Car:
         self.reversing = False
         self.rewardNo = 0
         self.reward = 0
+        self._delta_s = 0.0
 
         self.lifespan = 0
         self.score = 0
@@ -334,9 +358,6 @@ class Car:
             g.active = True
 
     def show(self):
-        #print(self.x,self.y)
-        # first calculate the center of the car in order to allow the
-        # rotation of the car to be anchored around the center
         upVector = self.direction.rotate(90)
         drawX = self.direction.x * self.width / 2 + upVector.x * self.height / 2
         drawY = self.direction.y * self.width / 2 + upVector.y * self.height / 2
@@ -428,16 +449,20 @@ class Car:
 
     def checkRewardGates(self):
         global vec2
-        self.reward = -1
+        self.reward = -0.05
         if self.rewardGates[self.rewardNo].hitCar(self):
             self.rewardGates[self.rewardNo].active = False
             self.rewardNo += 1
             self.score += 1
-            self.reward = 10
+            self.reward += 50
             if self.rewardNo == len(self.rewardGates):
                 self.rewardNo = 0
                 for g in self.rewardGates:
                     g.active = True
+        # dense progress bonus ~ proportional to forward pixels this step
+        self.reward += 0.02 * float(self._delta_s)   # tune 0.01..0.05 if needed
+        # optional: clip for stability
+
         self.directionToRewardGate = self.rewardGates[self.rewardNo].center - vec2(self.x, self.y)
 
     """
@@ -461,13 +486,25 @@ class Car:
         self.driftMomentum *= self.driftFriction
 
         if addVector.length() != 0:
-            addVector.normalize()
+            addVector = addVector.normalize()
 
-        addVector.x * abs(self.vel)
-        addVector.y * abs(self.vel)
+        # scale by speed (the previous lines didn't apply the scaling)
+        step_vec = addVector * abs(self.vel)
 
-        self.x += addVector.x
-        self.y += addVector.y
+        if 0 <= self.rewardNo < len(self.rewardGates):
+            to_gate = self.rewardGates[self.rewardNo].center - vec2(self.x, self.y)
+            if to_gate.length() > 1e-6 and step_vec.length() > 0:
+                t_hat = to_gate.normalize()
+                # count only *forward* progress toward the gate (never backward)
+                self._delta_s = max(0.0, step_vec.x * t_hat.x + step_vec.y * t_hat.y)
+            else:
+                self._delta_s = 0.0
+        else:   
+            self._delta_s = 0.0
+
+        # apply movement
+        self.x += step_vec.x
+        self.y += step_vec.y
 
     """
     keeps the velocity of the car within the maximum and minimum speeds
@@ -479,9 +516,6 @@ class Car:
         elif self.vel < self.maxReverseSpeed:
             self.vel = self.maxReverseSpeed
 
-    """
-    changes the cars direction and acceleration based on the users inputs
-    """
 
     def updateControls(self):
         multiplier = 1
@@ -522,7 +556,6 @@ class Car:
         for wall in self.walls:
             if wall.hitCar(self):
                 return True
-
         return False
 
     """
@@ -542,12 +575,6 @@ class Car:
                 minDist = dist(x1, y1, collisionPoint.x, collisionPoint.y)
                 closestCollisionPoint = vec2(collisionPoint)
         return closestCollisionPoint
-
-    """
-    by creating lines in many directions from the car and getting the closest collision point of that line
-    we create  "vision vectors" which will allow the car to 'see' 
-    kinda like a sonar system
-    """
 
     def getState(self):
         self.setVisionVectors()
@@ -577,10 +604,6 @@ class Car:
         for i in self.angles:
             self.setVisionVector(0, 0, i)
 
-    """
-    calculates and stores the distance to the nearest wall given a vector 
-    """
-
     def setVisionVector(self, startX, startY, angle):
         collisionVectorDirection = self.direction.rotate(angle)
         collisionVectorDirection = collisionVectorDirection.normalize() * self.vectorLength
@@ -594,10 +617,6 @@ class Car:
             self.collisionLineDistances.append(
                 dist(startingPoint.x, startingPoint.y, collisionPoint.x, collisionPoint.y))
         self.lineCollisionPoints.append(collisionPoint)
-
-    """
-    shows dots where the collision vectors detect a wall 
-    """
 
     def showCollisionVectors(self):
         global drawer

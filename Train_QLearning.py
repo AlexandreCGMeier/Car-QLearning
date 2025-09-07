@@ -1,7 +1,6 @@
-import pyglet
 from pyglet.gl import *
+import matplotlib.pyplot as plt
 import pygame
-import math
 from pyglet.window import key
 from Drawer import Drawer
 # from PygameAdditionalMethods import *
@@ -13,8 +12,7 @@ import random
 import os
 from Globals import displayHeight, displayWidth
 from Game import Game
-from OutsourcedClasses import DDDQNNet, Memory
-from tqdm import tqdm
+from OutsourcedClasses import DDDQNNet, Memory, writeToFile
 
 frameRate = 120.0
 
@@ -40,18 +38,17 @@ max_tau = 7000  # Tau is the C step where we update our target network
 # EXPLORATION HYPERPARAMETERS for epsilon greedy strategy
 explore_start = 1.0  # exploration probability at start, CHANGED THIS AS WE START WITH ADVANCED MODEL
 explore_stop = 0.1  # minimum exploration probability
-decay_rate = 0.00025 # exponential decay rate for exploration prob
-gamma = 0.95  # Discounting rate
+decay_rate = 0.00126 # exponential decay rate for exploration prob
+gamma = 0.99  # Discounting rate
 
 ## GPU: 1million, CPU: 100_000
 memory_size = 100_000
 
 # Set this to zero if you want to start a new run. 
-load_training_model_number = 8575
+load_training_model_number = 0
 
 load = False if load_training_model_number == 0 else True
 starting_episode = load_training_model_number #This is considered in how many more episodes should be run
-load_training_model_number = load_training_model_number
 
 def clear_console():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -64,7 +61,8 @@ game.new_episode()
 
 clear_console()
 print("pretraining")
-for i in tqdm(range(memory_size)):
+
+for i in range(memory_size):
         if i == 0:
             state = game.get_state()
 
@@ -122,10 +120,10 @@ with tf.compat.v1.Session() as sess:
 
     for episode in range(starting_episode, total_episodes):
         step = 0
-        decay_step += 1
         episode_rewards = []
         game.new_episode()
         state = game.get_state()
+        decay_step += 1
 
         while step < max_steps:
             step += 1
@@ -137,18 +135,19 @@ with tf.compat.v1.Session() as sess:
             total_reward = np.sum(episode_rewards)
             game.highScore = max(game.get_score(), game.highScore)
             if done:
-                next_state = np.zeros(state.shape, dtype=int)
+                next_state = np.zeros(state.shape, dtype=np.float32)
                 experience = state, action, reward, next_state, done
                 memory.store(experience)
+                writeToFile("score.txt", str(game.get_score())+"\n")
                 step = max_steps
                 if episode % 10 == 0:
                     print('Episode: {}'.format(episode) +
-                        '\tTotal reward: {:.4f}'.format(np.sum(episode_rewards)/game.get_lifespan()) +
-                        '\tExplore P: {:.4f}'.format(explore_probability) +
-                        '\tScore: {}'.format(game.get_score()) +
-                        '\tHighScore: {}'.format(game.highScore) +
-                        '\tlifespan: {}'.format(game.get_lifespan())+ 
-                        '\tactions per reward gate: {:.4f}'.format(game.get_lifespan() / (max(1, game.get_score()))) + "\n")
+                        ' | Total reward: {:.4f}'.format(np.sum(episode_rewards)) +
+                        ' | Explore P: {:.4f}'.format(explore_probability) +
+                        ' | Score: {}'.format(game.get_score()) +
+                        ' | HighScore: {}'.format(game.highScore) +
+                        ' | lifespan: {}'.format(game.get_lifespan())+ 
+                        ' | actions per reward gate: {:.4f}'.format(game.get_lifespan() / (max(1, game.get_score()))) + "\n")
 
             else:
                 next_state = game.get_state()
@@ -197,7 +196,7 @@ with tf.compat.v1.Session() as sess:
 
                 with open('QLearningFromOldMate.txt', 'a') as file:
                     file.write('Episode: {}'.format(episode) +
-                    '\tTotal reward: {:.4f}'.format(total_reward) +
+                    '\tTotal reward: {:.4f}'.format(int(total_reward)) +
                     '\tExplore P: {:.4f}'.format(explore_probability) +
                     '\tScore: {}'.format(game.get_score()) +
                     '\tHighScore: {}'.format(game.highScore) +

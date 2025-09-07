@@ -5,6 +5,33 @@ import os
 import tensorflow as tf
 import math
 
+import tensorflow as tf
+
+
+def writeToFile(filename, content):
+    with open(filename, 'a') as file:
+        file.write(content)
+
+# --- tiny shim so we can keep TF1-style graph code with Keras-3 Dense -------------
+def v1_dense(inputs, units, activation=None, kernel_initializer=None, name=None):
+    # Map TF1 activations to Keras-friendly values
+    if activation is tf.nn.elu:
+        activation = 'elu'
+    elif activation is tf.nn.relu:
+        activation = 'relu'
+    # (extend mapping if you use more)
+
+    # If a TF1 initializer object/string was passed, just forward it.
+    # Keras-3 accepts tf.keras.initializers objects or strings.
+    layer = tf.keras.layers.Dense(
+        units=units,
+        activation=activation,
+        kernel_initializer=kernel_initializer,
+        name=name,
+    )
+    return layer(inputs)
+# ----------------------------------------------------------------------------------
+
 class DDDQNNet:
     def __init__(self, state_size, action_size, learning_rate, name):
         self.state_size = state_size
@@ -12,75 +39,85 @@ class DDDQNNet:
         self.learning_rate = learning_rate
         self.name = name
 
-        # We use tf.variable_scope here to know which network we're using (DQN or target_net)
-        # it will be useful when we will update our w- parameters (by copy the DQN parameters)
         with tf.compat.v1.variable_scope(self.name):
-            # We create the placeholders
-            # *state_size means that we take each elements of state_size in tuple hence is like if we wrote
-            # [None, 100, 120, 4]
+            # placeholders (TF1 style)
             self.inputs_ = tf.compat.v1.placeholder(tf.float32, [None, *state_size], name="inputs")
-
             self.ISWeights_ = tf.compat.v1.placeholder(tf.float32, [None, 1], name='IS_weights')
-
             self.actions_ = tf.compat.v1.placeholder(tf.float32, [None, action_size], name="actions_")
-
-            # Remember that target_Q is the R(s,a) + ymax Qhat(s', a')
             self.target_Q = tf.compat.v1.placeholder(tf.float32, [None], name="target")
 
-            self.dense1 = tf.compat.v1.layers.dense(inputs=self.inputs_,
-                                          units=256,
-                                          activation=tf.nn.elu,
-                                          kernel_initializer=tf.compat.v1.keras.initializers.VarianceScaling(scale=1.0, mode="fan_avg", distribution="uniform"),
-                                          name="dense1")
-            #print("We here: " + str(self.dense1))
+            # Keras initializers equivalent to your TF1 VarianceScaling
+            vs_init = tf.keras.initializers.VarianceScaling(
+                scale=1.0, mode="fan_avg", distribution="uniform"
+            )
 
-            self.dense2 = tf.compat.v1.layers.dense(inputs=self.dense1,
-                                          units=256,
-                                          activation=tf.nn.elu,
-                                          kernel_initializer=tf.compat.v1.keras.initializers.VarianceScaling(scale=1.0, mode="fan_avg", distribution="uniform"),
-                                          name="dense2")
+            # fc layers
+            self.dense1 = v1_dense(
+                inputs=self.inputs_,
+                units=256,
+                activation='elu',
+                kernel_initializer=vs_init,
+                name="dense1",
+            )
 
-            ## Here we separate into two streams    
-            # The one that calculate V(s)
-            self.value_fc = tf.compat.v1.layers.dense(inputs=self.dense2,
-                                            units=256,
-                                            activation=tf.nn.elu,
-                                            kernel_initializer=tf.compat.v1.keras.initializers.VarianceScaling(scale=1.0, mode="fan_avg", distribution="uniform"),
-                                            name="value_fc")
+            self.dense2 = v1_dense(
+                inputs=self.dense1,
+                units=256,
+                activation='elu',
+                kernel_initializer=vs_init,
+                name="dense2",
+            )
 
-            self.value = tf.compat.v1.layers.dense(inputs=self.value_fc,
-                                         units=1,
-                                         activation=None,
-                                         kernel_initializer=tf.compat.v1.keras.initializers.VarianceScaling(scale=1.0, mode="fan_avg", distribution="uniform"),
-                                         name="value")
+            # value stream
+            self.value_fc = v1_dense(
+                inputs=self.dense2,
+                units=256,
+                activation='elu',
+                kernel_initializer=vs_init,
+                name="value_fc",
+            )
 
-            # The one that calculate A(s,a)
-            self.advantage_fc = tf.compat.v1.layers.dense(inputs=self.dense2,
-                                                units=256,
-                                                activation=tf.nn.elu,
-                                                kernel_initializer=tf.compat.v1.keras.initializers.VarianceScaling(scale=1.0, mode="fan_avg", distribution="uniform"),
-                                                name="advantage_fc")
+            self.value = v1_dense(
+                inputs=self.value_fc,
+                units=1,
+                activation=None,
+                kernel_initializer=vs_init,
+                name="value",
+            )
 
-            self.advantage = tf.compat.v1.layers.dense(inputs=self.advantage_fc,
-                                             units=self.action_size,
-                                             activation=None,
-                                             kernel_initializer=tf.compat.v1.keras.initializers.VarianceScaling(scale=1.0, mode="fan_avg", distribution="uniform"),
-                                             name="advantage")
+            # advantage stream
+            self.advantage_fc = v1_dense(
+                inputs=self.dense2,
+                units=256,
+                activation='elu',
+                kernel_initializer=vs_init,
+                name="advantage_fc",
+            )
 
-            # Agregating layer
-            # Q(s,a) = V(s) + (A(s,a) - 1/|A| * sum A(s,a'))
-            self.output = self.value + tf.subtract(self.advantage,
-                                                   tf.reduce_mean(self.advantage, axis=1, keepdims=True))
+            self.advantage = v1_dense(
+                inputs=self.advantage_fc,
+                units=self.action_size,
+                activation=None,
+                kernel_initializer=vs_init,
+                name="advantage",
+            )
 
-            # Q is our predicted Q value.
+            # dueling aggregation
+            self.output = self.value + tf.subtract(
+                self.advantage,
+                tf.reduce_mean(self.advantage, axis=1, keepdims=True)
+            )
+
+            # predicted Q for chosen actions
             self.Q = tf.reduce_sum(tf.multiply(self.output, self.actions_), axis=1)
 
-            # The loss is modified because of PER
-            self.absolute_errors = tf.abs(self.target_Q - self.Q)  # for updating Sumtree
-
+            # PER loss terms
+            self.absolute_errors = tf.abs(self.target_Q - self.Q)
             self.loss = tf.reduce_mean(self.ISWeights_ * tf.square(self.target_Q - self.Q))
 
+            # keep the TF1 optimizer (works in graph mode)
             self.optimizer = tf.compat.v1.train.AdamOptimizer(self.learning_rate).minimize(self.loss)
+
 
 class SumTree(object):
     """

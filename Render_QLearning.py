@@ -17,6 +17,12 @@ from OutsourcedClasses import DDDQNNet, Memory
 from pyglet import clock
 
 frameRate = 120.0
+starting_episode = 6874
+# Get the primary screen resolution (in pixels)
+display = pyglet.canvas.get_display()
+screen  = display.get_default_screen()
+screen_w, screen_h = screen.width, screen.height
+print(screen_w, screen_h)  # e.g. 2560 1600
 
 vec2 = pygame.math.Vector2
 tf.compat.v1.disable_eager_execution()
@@ -49,7 +55,7 @@ gamma = 0.95  # Discounting rate
 ### MODIFY THIS TO FALSE IF YOU JUST WANT TO SEE THE TRAINED AGENT
 training =  False
 load = True
-starting_episode = 6208
+
 load_traing_model = True
 
 load_training_model_number = starting_episode
@@ -148,6 +154,6 @@ class MyWindow(pyglet.window.Window):
             self.next_state = game.get_state()
             self.state = self.next_state
 
-window = MyWindow(displayWidth, displayHeight, "AI Learns to Drive", resizable=False)
+window = MyWindow(displayWidth, displayHeight, "AI Learns to Drive", resizable=True)
 pyglet.clock.schedule_interval(window.update, 1 / frameRate)
 pyglet.app.run()
