@@ -23,7 +23,7 @@ class Drawer:
         pyglet.graphics.draw_indexed(4, pyglet.gl.GL_TRIANGLES, [0, 1, 2, 0, 2, 3],
                                      ('v2f', [x, y, x + w, y, x + w, y + h, x, y + h]),
                                      ('c3B', self.color * 4))
-
+        
     def triangle(self, x1, y1, x2, y2, x3, y3):
         pyglet.graphics.draw(3, pyglet.gl.GL_TRIANGLES,
                              ('v2f', [x1, y1, x2, y2, x3, y3]),

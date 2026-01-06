@@ -1,7 +1,6 @@
 import numpy as np
 import pygame
 import pyglet
-
 from Drawer import Drawer
 from Globals import displayHeight, displayWidth
 from PygameAdditionalMethods import *
@@ -14,7 +13,7 @@ class Game:
     no_of_actions = 9
     state_size = 15
     def __init__(self):
-        trackImg = pyglet.image.load('images/track.png')
+        trackImg = pyglet.image.load('track.png')
         self.trackSprite = pyglet.sprite.Sprite(trackImg, x=0, y=0)
         self.trackSprite.update(scale=0.6)
         self.walls = []
@@ -325,7 +324,7 @@ class Car:
         self.vectorLength = 300
         self.rewardAdditional = 0
 
-        self.carPic = pyglet.image.load('images/car.png')
+        self.carPic = pyglet.image.load('car.png')
         self.carSprite = pyglet.sprite.Sprite(self.carPic, x=self.x, y=self.y)
         self.carSprite.update(rotation=0, scale_x=self.width / self.carSprite.width,
                               scale_y=self.height / self.carSprite.height)
