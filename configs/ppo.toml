@@ -1,0 +1,5 @@
+# PPO (Schulman et al. 2017): on-policy actor-critic, no replay buffer.
+[agent]
+algo = "ppo"
+lr = 0.0003
+hidden = [256, 256]

@@ -1,0 +1,6 @@
+# Vanilla DQN (Mnih et al. 2015): single Q-network target, uniform replay.
+[agent]
+algo = "dqn"
+double = false
+dueling = false
+per = false

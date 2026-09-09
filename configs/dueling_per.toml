@@ -1,0 +1,6 @@
+# Dueling Double DQN with prioritised replay - the architecture of the original project.
+[agent]
+algo = "dqn"
+double = true
+dueling = true
+per = true

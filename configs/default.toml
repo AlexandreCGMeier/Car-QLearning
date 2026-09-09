@@ -1,0 +1,81 @@
+# carql default configuration.  Every knob lives here; override any of them
+# on the command line with  --set section.key=value  (e.g. --set train.n_envs=32)
+# Presets in this folder (dqn.toml, ddqn.toml, dueling_per.toml, ppo.toml)
+# only change the [agent] section.
+
+[car]
+length = 25.0          # car size in world units (the classic track is 1260 x 700)
+width = 15.0
+max_speed = 12.5       # world units per simulation step
+min_speed = 0.78       # the car never fully stops (as in the original)
+acceleration = 0.156
+brake_factor = 2.0
+friction = 0.98
+turn_rate = 0.2        # rad per step at full steering authority
+steer_full_speed = 5.0 # steering authority ramps up linearly until this speed
+drift_gain = 1.0       # 0 = grip only, 1 = original Tokyo-drift amount
+drift_friction = 0.87
+drift_min_speed = 5.0
+
+[env]
+track = "classic"      # name in tracks/ or a path to a track .json
+n_rays = 16
+fov = 360.0
+ray_length = 600.0
+gate_lookahead = 2     # bearing to the next N gates is part of the observation
+max_steps = 2000
+stall_steps = 300      # episode ends if no gate is passed for this long
+reward_gate = 5.0
+reward_step = -0.01
+reward_progress = 0.01 # per world unit of forward progress towards the next gate
+reward_crash = -50.0  # must dominate the dense progress reward, otherwise fast-and-crashy wins
+reward_lap = 20.0
+speed_bonus = 0.0
+random_start = true    # training only: spawn at a random gate (eval/show always use the start line)
+start_jitter_deg = 5.0
+
+[agent]
+algo = "dqn"           # "dqn" (with the flags below) or "ppo"
+hidden = [256, 256]
+activation = "elu"
+lr = 0.00025
+gamma = 0.99
+double = true
+dueling = true
+per = true
+per_alpha = 0.6
+per_beta0 = 0.4
+per_eps = 0.001
+buffer_size = 200000
+batch_size = 128
+learning_starts = 5000
+updates_per_step = 4   # gradient updates per batched env step (64 cars -> 4 updates of batch 128)
+n_step = 3             # multi-step returns
+target_update = 500    # gradient updates between hard target copies (0 = polyak)
+polyak = 0.005
+eps_start = 1.0
+eps_end = 0.05
+eps_decay_frames = 500000
+grad_clip = 10.0
+huber = false
+reward_scale = 0.1     # rewards are scaled before they enter the replay buffer (keeps TD errors ~unit size)
+per_clip = 5.0         # |TD error| clipped to this for replay priorities (0 = no clip)
+rollout_steps = 128    # ppo only from here on
+ppo_epochs = 4
+minibatches = 8
+clip = 0.2
+gae_lambda = 0.95
+entropy_coef = 0.01
+value_coef = 0.5
+
+[train]
+run = ""               # run name (default: <track>-<algo>)
+n_envs = 64            # cars simulated in parallel
+total_episodes = 3000  # episodes get long once the car laps; ~3M frames for DQN, ~15-30 min on a laptop
+checkpoint_every = 50  # episodes -> runs/<run>/checkpoints/ep_XXXXXX.pt
+eval_every = 50        # greedy evaluation from the start line; feeds best.pt
+eval_envs = 8
+log_every = 50
+seed = 0
+device = "auto"
+threads = 0

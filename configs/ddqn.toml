@@ -1,0 +1,6 @@
+# Double DQN (van Hasselt et al. 2016): online net picks the action, target net rates it.
+[agent]
+algo = "dqn"
+double = true
+dueling = false
+per = false
