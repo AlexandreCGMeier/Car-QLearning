@@ -88,6 +88,14 @@ class AgentConfig:
     value_coef: float = 0.5
 
 
+def agent_slug(a: "AgentConfig") -> str:
+    """Short name of the agent variant, used for default run names (classic-dueling_per, ...)."""
+    if a.algo.lower() == "ppo":
+        return "ppo"
+    base = "dueling" if a.dueling else ("ddqn" if a.double else "dqn")
+    return base + ("_per" if a.per else "")
+
+
 @dataclass
 class TrainConfig:
     run: str = ""                 # run name; default derived from track + algo

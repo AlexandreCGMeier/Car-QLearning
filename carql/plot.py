@@ -8,6 +8,10 @@ from .runs import list_runs, resolve_run
 
 def _smooth(y, k: int):
     y = np.asarray(y, dtype=float)
+    if np.isnan(y).any():                     # forward-fill gaps (e.g. loss before learning starts)
+        idx = np.where(np.isnan(y), 0, np.arange(len(y)))
+        np.maximum.accumulate(idx, out=idx)
+        y = np.where(np.isnan(y), np.nan_to_num(y[idx], nan=0.0), y)
     if len(y) < 2 or k <= 1:
         return y
     k = min(k, len(y))
@@ -25,7 +29,10 @@ def plot_runs(names: list[str], out: str | None = None, window: int = 100) -> No
     except ImportError as e:
         raise SystemExit("matplotlib is needed for plots:  pip install matplotlib") from e
 
-    runs = [resolve_run(n) for n in names] if names else list_runs()
+    if not names or names == ["all"]:
+        runs = list_runs()
+    else:
+        runs = [resolve_run(n) for n in names]
     if not runs:
         raise SystemExit("no runs to plot")
     fig, axes = plt.subplots(2, 2, figsize=(13, 8))

@@ -63,11 +63,11 @@ class BuilderWindow:
         self.keys = key.KeyStateHandler()
 
         self.win = make_window(1280, 800, f"carql build - {self.name}")
-        self.win.push_handlers(self.keys)
         self.win.push_handlers(on_draw=self.on_draw, on_resize=self.on_resize, on_key_press=self.on_key_press,
                                on_mouse_press=self.on_mouse_press, on_mouse_release=self.on_mouse_release,
                                on_mouse_drag=self.on_mouse_drag, on_mouse_motion=self.on_mouse_motion,
                                on_mouse_scroll=self.on_mouse_scroll)
+        self.win.push_handlers(self.keys)      # on top: sees every press/release for the test drive
         self.cam = Camera(self.size, margin=14, bottom_reserved=8)
         self.world_batch = pyglet.graphics.Batch()
         self.overlay_batch = pyglet.graphics.Batch()
@@ -248,7 +248,7 @@ class BuilderWindow:
         elif self.sim is not None:
             if symbol == key.R:
                 self.sim.reset_all()
-            return True
+            return None
         elif symbol == key.BRACKETLEFT:
             self.width = max(20.0, self.width - 5); self.regenerate()
         elif symbol == key.BRACKETRIGHT:
@@ -289,7 +289,7 @@ class BuilderWindow:
             self.track_gfx.show_walls = not self.track_gfx.show_walls; self.track_gfx.update_thickness()
         elif symbol == key.S:
             self.save()
-        return True
+        return None
 
     def save(self) -> None:
         if self.track is None:

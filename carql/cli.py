@@ -8,6 +8,7 @@
     carql runs
     carql export  RUN [RUN ...] [--checkpoints SPEC] [--steps N] --out replay.html
     carql plot    RUN [RUN ...] [--out curves.png]
+    carql gui
 """
 from __future__ import annotations
 
@@ -109,11 +110,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--no-respawn", action="store_true")
 
     p = sub.add_parser("plot", help="learning curves for one or more runs")
-    p.add_argument("runs", nargs="*", help="run names (default: all)")
+    p.add_argument("runs", nargs="*", help="run names (default / 'all': every run)")
     p.add_argument("--out", "-o", default=None, help="write PNG instead of opening a window")
 
     p = sub.add_parser("play", help="drive a car yourself with the arrow keys")
     p.add_argument("--track", "-t", default="classic")
+
+    sub.add_parser("gui", help="desktop launcher: train, show, race, build from one window")
     return ap
 
 
@@ -148,6 +151,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "play":
         from .viewer.show import play
         play(args.track)
+        return 0
+
+    if args.cmd == "gui":
+        from .gui import main as gui_main
+        gui_main()
         return 0
 
     if args.cmd == "track":

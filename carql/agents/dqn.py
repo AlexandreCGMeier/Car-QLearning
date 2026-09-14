@@ -119,7 +119,11 @@ class DQNAgent:
         return {"net": self.net.state_dict(), "opt": self.opt.state_dict(), "n_updates": self.n_updates}
 
     def load_state(self, s: dict, strict: bool = True) -> None:
-        self.net.load_state_dict(s["net"], strict=strict)
+        try:
+            self.net.load_state_dict(s["net"], strict=strict)
+        except RuntimeError as e:
+            raise RuntimeError("checkpoint architecture does not match this agent (dueling / hidden sizes differ); "
+                               "resume the run with its own config or pick another --run name") from e
         self.target.load_state_dict(s["net"], strict=strict)
         if "opt" in s:
             try:

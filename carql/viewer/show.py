@@ -81,9 +81,9 @@ class ArenaWindow:
         self.fps = 0.0
 
         self.win = make_window(1280, 800, title)
-        self.win.push_handlers(self.keys)
         self.win.push_handlers(on_draw=self.on_draw, on_resize=self.on_resize, on_key_press=self.on_key_press,
                                on_mouse_press=self.on_mouse_press, on_mouse_scroll=self.on_mouse_scroll)
+        self.win.push_handlers(self.keys)      # on top of the stack: sees every press/release for manual driving
         self.cam = Camera(track.size, margin=14, top_reserved=0, bottom_reserved=70 if mode == "show" else 8)
         self.world_batch = pyglet.graphics.Batch()
         self.hud_batch = pyglet.graphics.Batch()
@@ -192,7 +192,7 @@ class ArenaWindow:
             elif symbol == key._0 and n:
                 self.select_checkpoint(0)
         self.apply_visibility()
-        return True
+        return None
 
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int) -> None:
         if self.timeline and self.timeline.hit(x, y):

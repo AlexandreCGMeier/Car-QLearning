@@ -79,14 +79,14 @@ class Run:
         if not p.exists():
             return []
         with open(p) as f:
-            return [{k: float(v) for k, v in row.items()} for row in csv.DictReader(f)]
+            return [{k: _num(v) for k, v in row.items()} for row in csv.DictReader(f)]
 
     def evals(self) -> list[dict]:
         p = self.path / "eval.csv"
         if not p.exists():
             return []
         with open(p) as f:
-            return [{k: float(v) for k, v in row.items()} for row in csv.DictReader(f)]
+            return [{k: _num(v) for k, v in row.items()} for row in csv.DictReader(f)]
 
     # -------------------------------------------------------- selection
     def select(self, spec: str | None) -> list[Path]:
@@ -131,7 +131,16 @@ class Run:
         return out
 
 
-def list_runs(runs_dir: Path = RUNS_DIR) -> list[Run]:
+def _num(v: str) -> float:
+    """CSV cell -> float; empty cells (e.g. loss before learning starts) become NaN."""
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return float("nan")
+
+
+def list_runs(runs_dir: Path | None = None) -> list[Run]:
+    runs_dir = runs_dir or RUNS_DIR
     if not runs_dir.exists():
         return []
     return sorted((Run(p) for p in runs_dir.iterdir() if (p / "config.toml").exists()),

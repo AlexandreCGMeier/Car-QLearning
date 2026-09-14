@@ -11,7 +11,7 @@ import numpy as np
 import torch
 
 from .agents import DQNAgent, PPOAgent, load_checkpoint, make_agent, resolve_device, save_checkpoint
-from .config import Config
+from .config import Config, agent_slug
 from .env import CarEnv
 from .runs import RUNS_DIR, Run
 from .track import Track
@@ -158,7 +158,7 @@ def evaluate(agent, env: CarEnv, max_steps: int) -> dict:
 # ---------------------------------------------------------------------------
 def prepare_run(cfg: Config, run_name: str | None = None, resume: bool = False) -> tuple[Path, Track]:
     track = Track.load(cfg.env.track)
-    name = run_name or cfg.train.run or f"{track.name}-{cfg.agent.algo}"
+    name = run_name or cfg.train.run or f"{track.name}-{agent_slug(cfg.agent)}"
     cfg.train.run = name
     run_dir = RUNS_DIR / name
     if run_dir.exists() and not resume:
@@ -173,11 +173,29 @@ def prepare_run(cfg: Config, run_name: str | None = None, resume: bool = False) 
     return run_dir, track
 
 
+def _resume_config(cli_cfg: Config, run_name: str | None) -> Config:
+    """On --resume, continue with the config the run was trained with (only the episode budget
+    and run name are taken from the command line)."""
+    name = run_name or cli_cfg.train.run or f"{Track.load(cli_cfg.env.track).name}-{agent_slug(cli_cfg.agent)}"
+    stored = RUNS_DIR / name / "config.toml"
+    if not stored.exists():
+        raise FileNotFoundError(f"cannot resume: run {name!r} has no config.toml in {RUNS_DIR}")
+    cfg = Config.load(stored)
+    cfg.train.total_episodes = cli_cfg.train.total_episodes
+    cfg.train.run = name
+    if agent_slug(cfg.agent) != agent_slug(cli_cfg.agent):
+        print(f"note: resuming {name!r} with its stored agent ({agent_slug(cfg.agent)}); "
+              f"command-line preset ({agent_slug(cli_cfg.agent)}) ignored")
+    return cfg
+
+
 def train(cfg: Config, run_name: str | None = None, resume: bool = False) -> Path:
     torch.manual_seed(cfg.train.seed)
     np.random.seed(cfg.train.seed)
     if cfg.train.threads > 0:
         torch.set_num_threads(cfg.train.threads)
+    if resume:
+        cfg = _resume_config(cfg, run_name)
     device = resolve_device(cfg.train.device)
     run_dir, track = prepare_run(cfg, run_name, resume)
     env = CarEnv(track, cfg, n=cfg.train.n_envs, seed=cfg.train.seed)

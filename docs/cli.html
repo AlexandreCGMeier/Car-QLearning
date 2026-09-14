@@ -1,0 +1,576 @@
+<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>carql Command Reference</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>\nimg{max-width:100%}\n
+:root{
+  --bg:#EEF0F2; --surface:#FFFFFF; --surface-2:#F6F7F8; --line:#D7DBE0; --line-strong:#B9BFC7;
+  --ink:#1B1E23; --ink-2:#4A515B; --ink-3:#727A85;
+  --accent:#1F8A4C; --accent-ink:#156B3A; --accent-soft:#DDF1E4;
+  --mark:#C99A00; --mark-soft:#FFF3C2;
+  --wall:#C8423E; --code-bg:#22252B; --code-ink:#E9ECEF; --code-dim:#9AA3AE; --code-flag:#8DD9A6; --code-mark:#FFE07A;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --cond:"IBM Plex Sans Condensed","IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1E2024; --surface:#26292E; --surface-2:#2C3036; --line:#3A3F47; --line-strong:#4D535C;
+    --ink:#ECEEF1; --ink-2:#B8BEC7; --ink-3:#858D98;
+    --accent:#6FCF8A; --accent-ink:#8ADCA1; --accent-soft:#26382D;
+    --mark:#FFD84D; --mark-soft:#3D3617;
+    --wall:#F07C78; --code-bg:#15171A; --code-ink:#E9ECEF; --code-dim:#8B939E; --code-flag:#8DD9A6; --code-mark:#FFE07A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1E2024; --surface:#26292E; --surface-2:#2C3036; --line:#3A3F47; --line-strong:#4D535C;
+  --ink:#ECEEF1; --ink-2:#B8BEC7; --ink-3:#858D98;
+  --accent:#6FCF8A; --accent-ink:#8ADCA1; --accent-soft:#26382D;
+  --mark:#FFD84D; --mark-soft:#3D3617;
+  --wall:#F07C78; --code-bg:#15171A; --code-ink:#E9ECEF; --code-dim:#8B939E; --code-flag:#8DD9A6; --code-mark:#FFE07A;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 var(--sans);padding-block:0 64px;padding-inline:16px}
+a{color:var(--accent-ink);text-decoration:none}
+a:hover,a:focus-visible{text-decoration:underline}
+:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+code,kbd,pre{font-family:var(--mono)}
+code{font-size:.92em;background:var(--surface-2);border:1px solid var(--line);border-radius:4px;padding:.05em .35em;white-space:nowrap}
+kbd{font-size:.85em;background:var(--surface);border:1px solid var(--line-strong);border-bottom-width:2px;border-radius:4px;padding:.05em .45em;white-space:nowrap}
+pre{margin:0;background:var(--code-bg);color:var(--code-ink);border-radius:6px;padding:14px 18px;font-size:13.5px;line-height:1.55;overflow-x:auto}
+pre .c{color:var(--code-dim)} pre .f{color:var(--code-flag)} pre .m{color:var(--code-mark)}
+h1,h2,h3{font-family:var(--cond);text-wrap:balance;margin:0}
+h1{font-size:40px;font-weight:600;letter-spacing:-.01em;line-height:1.05}
+h2{font-size:26px;font-weight:600;line-height:1.15}
+h3{font-size:18px;font-weight:600}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+.wrap{max-width:1180px;margin:0 auto}
+header.top{padding-block:40px 28px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:24px 48px;align-items:flex-end;justify-content:space-between}
+header.top .lede{max-width:62ch;color:var(--ink-2);font-size:16px}
+header.top .meta{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);display:grid;gap:4px}
+header.top .meta b{color:var(--ink);font-weight:500}
+
+.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:48px;padding-top:32px}
+nav.side{position:sticky;top:20px;align-self:start;display:grid;gap:22px;font-size:13.5px}
+nav.side .group{display:grid;gap:4px}
+nav.side .group .eyebrow{margin-bottom:4px}
+nav.side a{color:var(--ink-2);padding:3px 8px;border-left:2px solid transparent;border-radius:0 4px 4px 0}
+nav.side a code{background:none;border:0;padding:0;color:inherit;font-size:13px}
+nav.side a:hover{color:var(--ink);background:var(--surface);text-decoration:none;border-left-color:var(--line-strong)}
+main{display:grid;gap:64px;min-width:0}
+section{display:grid;gap:18px;scroll-margin-top:20px}
+section > .head{display:grid;gap:6px;padding-bottom:12px;border-bottom:2px solid var(--line-strong)}
+section > .head p{color:var(--ink-2);max-width:68ch}
+.prose{max-width:68ch;color:var(--ink-2)}
+.prose b{color:var(--ink);font-weight:500}
+
+.cmd{display:grid;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:20px 22px}
+.cmd .syn{display:grid;gap:8px}
+.cmd .syn .eyebrow{color:var(--accent-ink)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:500}
+tr:last-child td{border-bottom:0}
+td.flag{font-family:var(--mono);font-size:13px;white-space:nowrap;color:var(--ink)}
+td.flag small{display:block;color:var(--ink-3);font-size:12px;white-space:nowrap}
+td.def{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);white-space:nowrap;font-variant-numeric:tabular-nums}
+td.kbd{white-space:nowrap}
+.tablewrap{overflow-x:auto}
+.tablewrap table{min-width:520px}
+.note{display:grid;gap:6px;border-left:3px solid var(--mark);background:var(--mark-soft);padding:10px 14px;border-radius:0 6px 6px 0;font-size:14px;color:var(--ink-2)}
+.note b{color:var(--ink);font-weight:500}
+.spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.spec .item{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px;display:grid;gap:4px;font-size:14px}
+.spec .item code{font-size:13.5px;justify-self:start;background:var(--accent-soft);border-color:transparent;color:var(--accent-ink)}
+.spec .item span{color:var(--ink-2)}
+.tree{font-family:var(--mono);font-size:13px;line-height:1.7;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 18px;overflow-x:auto;white-space:pre;color:var(--ink)}
+.tree i{font-style:normal;color:var(--ink-3)}
+.recipes{display:grid;gap:14px}
+.recipe{display:grid;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px 20px}
+.recipe p{color:var(--ink-2);max-width:68ch}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:start}
+.two > div{display:grid;gap:10px}
+details{border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+details summary{cursor:pointer;padding:10px 14px;font-family:var(--cond);font-size:16px;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details summary::after{content:"+";font-family:var(--mono);color:var(--ink-3)}
+details[open] summary::after{content:"–"}
+details summary code{font-size:13px}
+details .tablewrap{border-top:1px solid var(--line)}
+.rule{color:var(--wall)}
+@media (max-width:820px){
+  .layout{grid-template-columns:1fr;gap:28px}
+  nav.side{position:static;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+  h1{font-size:32px}
+}
+</style>\n</head>\n<body>\n
+
+<div class="wrap">
+<header class="top">
+  <div style="display:grid;gap:12px">
+    <span class="eyebrow">Car-QLearning · command line reference</span>
+    <h1>carql Command Reference</h1>
+    <p class="lede">Every command, every flag, and how they connect. The whole tool is two verbs — <code>train</code> writes a run folder, <code>show</code> reads one — and everything else is a variation on reading runs and tracks.</p>
+  </div>
+  <div class="meta">
+    <span>package <b>carql 2.0</b> · Python ≥ 3.11</span>
+    <span>entry points <b>carql …</b> or <b>python -m carql …</b></span>
+    <span>activate first <b>source .venv/bin/activate</b> or prefix <b>uv run</b></span>
+  </div>
+</header>
+
+<div class="layout">
+<nav class="side" aria-label="Sections">
+  <div class="group"><span class="eyebrow">Orientation</span>
+    <a href="#model">Mental model</a>
+    <a href="#recipes">Recipes</a>
+  </div>
+  <div class="group"><span class="eyebrow">Commands</span>
+    <a href="#train"><code>train</code></a>
+    <a href="#show"><code>show</code></a>
+    <a href="#race"><code>race</code></a>
+    <a href="#build"><code>build</code></a>
+    <a href="#play"><code>play</code></a>
+    <a href="#track"><code>track</code></a>
+    <a href="#runs"><code>runs</code></a>
+    <a href="#export"><code>export</code></a>
+    <a href="#plot"><code>plot</code></a>
+    <a href="#gui"><code>gui</code></a>
+  </div>
+  <div class="group"><span class="eyebrow">Reference</span>
+    <a href="#specs">Checkpoint specs</a>
+    <a href="#config">Config keys</a>
+    <a href="#keys">Keyboard</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- ============================================================ model -->
+<section id="model">
+  <div class="head"><span class="eyebrow">Orientation</span><h2>Mental model</h2>
+  <p>Three kinds of things on disk. Commands either create them or read them.</p></div>
+  <div class="two">
+    <div>
+      <h3>Tracks — <code>tracks/*.json</code></h3>
+      <p class="prose">Walls, ordered reward gates and a start pose in world units. Made by <code>build</code> (drawn), <code>track import</code> (from a PNG), or converted by hand (<code>classic</code>). Referenced everywhere by <b>name</b> (<code>classic</code>, <code>track_1</code>) or by path.</p>
+      <h3>Runs — <code>runs/&lt;name&gt;/</code></h3>
+      <p class="prose">One training session. Self-contained: it carries its config and a copy of its track, so a run never depends on files that may change later. Referenced by <b>name</b>.</p>
+      <h3>Checkpoints — <code>ep_NNNNNN.pt</code></h3>
+      <p class="prose">Weights saved every <code>train.checkpoint_every</code> episodes, plus the config, the episode/frame counters and the greedy evaluation score at that moment. Selected with a <a href="#specs">checkpoint spec</a>.</p>
+    </div>
+    <div>
+      <div class="tree">runs/classic-dueling_per/
+├─ config.toml        <i>exact config the run used</i>
+├─ track.json         <i>copy of the track</i>
+├─ checkpoints/
+│  ├─ ep_000050.pt    <i>every checkpoint_every episodes</i>
+│  ├─ ep_000100.pt
+│  └─ …
+├─ latest.pt          <i>most recent weights</i>
+├─ best.pt            <i>best greedy evaluation so far</i>
+├─ metrics.csv        <i>one row per training episode</i>
+├─ eval.csv           <i>greedy eval every eval_every episodes</i>
+└─ log.txt</div>
+      <div class="note"><b>Naming.</b> Without <code>-r</code>, a run is called <code>&lt;track&gt;-&lt;variant&gt;</code>: <code>classic-dueling_per</code>, <code>classic-ddqn</code>, <code>classic-dqn</code>, <code>classic-ppo</code>. Training into an existing name is refused unless you pass <code>--resume</code>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ recipes -->
+<section id="recipes">
+  <div class="head"><span class="eyebrow">Orientation</span><h2>Recipes</h2><p>The four things you will actually do, end to end.</p></div>
+  <div class="recipes">
+    <div class="recipe">
+      <h3>First run, then watch it</h3>
+<pre>carql train                          <span class="c"># Dueling DDQN+PER on classic → runs/classic-dueling_per/ (~15–30 min)</span>
+carql show                           <span class="c"># newest run, all checkpoints, starts on the latest</span></pre>
+      <p>Training prints one line every 50 episodes; the <code>eval N gates / M laps</code> at the end of the line is the greedy policy from the start line, and it is what the viewer's timeline bars show.</p>
+    </div>
+    <div class="recipe">
+      <h3>The demo: from disaster to drifter</h3>
+<pre>carql show classic-dueling_per --start first      <span class="c"># open on checkpoint #1</span>
+<span class="c"># then in the window: → next checkpoint · digits 1–9 jump to 10–90 % · End = final model</span>
+carql race classic-dueling_per -k spread:6        <span class="c"># or let six stages of training race at once</span></pre>
+    </div>
+    <div class="recipe">
+      <h3>Architecture tournament</h3>
+<pre>for c in dqn ddqn dueling_per ppo; do carql train -c $c; done
+carql plot                                        <span class="c"># learning curves, all runs</span>
+carql race classic-dqn classic-ddqn classic-dueling_per classic-ppo -k best</pre>
+      <p>Each preset gets its own run folder because the default name includes the variant. Same track, same budget, same physics — only the agent differs.</p>
+    </div>
+    <div class="recipe">
+      <h3>A new track</h3>
+<pre>carql build                                       <span class="c"># click a centerline, scroll for width, S saves tracks/custom-….json</span>
+carql play -t custom-0910-1120                    <span class="c"># feel it with the arrow keys</span>
+carql train -t custom-0910-1120 -c ppo            <span class="c"># → runs/custom-0910-1120-ppo/</span>
+carql show classic-dueling_per -t custom-0910-1120   <span class="c"># or drop an old policy onto it</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ train -->
+<section id="train">
+  <div class="head"><span class="eyebrow">Command</span><h2>carql train</h2><p>Train an agent and write a run folder. Blocks until the episode budget is reached; <kbd>Ctrl</kbd>+<kbd>C</kbd> saves <code>latest.pt</code> and exits cleanly.</p></div>
+  <div class="cmd">
+    <div class="syn"><span class="eyebrow">Synopsis</span>
+<pre>carql train [<span class="f">-c</span> PRESET] [<span class="f">-t</span> TRACK] [<span class="f">-r</span> NAME] [<span class="f">-n</span> EPISODES] [<span class="f">--resume</span>] [<span class="f">--set</span> section.key=value …]</pre></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Flag</th><th>Default</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td class="flag">-c, --config PRESET</td><td class="def">default.toml</td><td>Agent preset from <code>configs/</code>: <code>dqn</code>, <code>ddqn</code>, <code>dueling_per</code>, <code>ppo</code> — or a path to your own <code>.toml</code>. A preset is layered on top of <code>configs/default.toml</code>; the shipped ones only change the <code>[agent]</code> section.</td></tr>
+        <tr><td class="flag">-t, --track TRACK</td><td class="def">classic</td><td>Track name in <code>tracks/</code> or a path to a track <code>.json</code>. Same as <code>--set env.track=…</code>.</td></tr>
+        <tr><td class="flag">-r, --run NAME</td><td class="def">&lt;track&gt;-&lt;variant&gt;</td><td>Run folder name under <code>runs/</code>. Refused if it already has checkpoints, unless <code>--resume</code>.</td></tr>
+        <tr><td class="flag">-n, --episodes N</td><td class="def">3000</td><td>Total episode budget (cumulative when resuming). Episodes get long once the car laps, so the budget in frames grows over a run; 3000 episodes ≈ 3 M frames for DQN.</td></tr>
+        <tr><td class="flag">--resume</td><td class="def">off</td><td>Continue an existing run from its <code>latest.pt</code>, using the <b>run's stored config</b>. A different <code>-c</code> on the command line is ignored with a note; only <code>-n</code> and <code>-r</code> are taken from the command line.</td></tr>
+        <tr><td class="flag">--set section.key=value<small>repeatable</small></td><td class="def">—</td><td>Override any <a href="#config">config key</a>: <code>--set train.n_envs=32 --set env.reward_crash=-80 --set agent.hidden=[128,128]</code>. Booleans accept <code>true/false</code>; lists are written without spaces.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="syn"><span class="eyebrow">Examples</span>
+<pre>carql train -c ppo                                   <span class="c"># → runs/classic-ppo/</span>
+carql train -t track_1 -r t1-fast -n 5000            <span class="c"># named run on another track</span>
+carql train -r classic-dueling_per --resume -n 6000  <span class="c"># continue to 6000 episodes total</span>
+carql train --set agent.per=false --set agent.eps_end=0.02
+carql train -c dqn --set train.seed=1 -r classic-dqn-s1   <span class="c"># second seed, separate folder</span></pre></div>
+  </div>
+  <p class="prose">What a log line means: <code>ep 1200 | 916k frames | ret 501 | score 92 | laps 1.7 | len 977 | crash 0.73 | eps 0.050 | loss 0.045 | 1.7k fps | 9.0 min | eval 216.9 gates 3.00 laps</code>. Everything before <code>eval</code> is a 100-episode training average (cars spawn at random gates and explore with ε-greedy, so <code>score</code> undercounts what the greedy policy can do). <code>eval</code> is the greedy policy from the start line and feeds <code>best.pt</code> and the viewer's timeline.</p>
+</section>
+
+<!-- ============================================================ show -->
+<section id="show">
+  <div class="head"><span class="eyebrow">Command</span><h2>carql show</h2><p>Watch one run drive. Loads the selected checkpoints, draws the training timeline along the bottom, and lets you switch between them live.</p></div>
+  <div class="cmd">
+    <div class="syn"><span class="eyebrow">Synopsis</span>
+<pre>carql show [RUN] [<span class="f">-k</span> SPEC] [<span class="f">-t</span> TRACK] [<span class="f">-s</span> START] [<span class="f">--speed</span> X] [<span class="f">--no-rays</span>]</pre></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Flag</th><th>Default</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td class="flag">RUN</td><td class="def">newest run</td><td>Run name (or path to a run folder). Without it, the most recently modified run under <code>runs/</code>.</td></tr>
+        <tr><td class="flag">-k, --checkpoints SPEC</td><td class="def">all</td><td>Which checkpoints to load into the timeline — see <a href="#specs">checkpoint specs</a>. <code>every:250</code> thins a long run.</td></tr>
+        <tr><td class="flag">-t, --track TRACK</td><td class="def">the run's track</td><td>Drive on a different track than the one trained on. Physics come from the checkpoint, the geometry from the track.</td></tr>
+        <tr><td class="flag">-s, --start START</td><td class="def">latest</td><td>Checkpoint to open on: an episode number (nearest wins), <code>first</code>, or <code>latest</code>.</td></tr>
+        <tr><td class="flag">--speed X</td><td class="def">1</td><td>Simulation steps per rendered frame (60 frames/s). <code>0.5</code> is slow motion, <code>4</code> fast forward; <kbd>+</kbd>/<kbd>-</kbd> change it live.</td></tr>
+        <tr><td class="flag">--no-rays</td><td class="def">rays on</td><td>Start with the 16 sensor rays hidden (<kbd>V</kbd> toggles them).</td></tr>
+      </tbody>
+    </table></div>
+    <div class="syn"><span class="eyebrow">Examples</span>
+<pre>carql show                                   <span class="c"># newest run, latest checkpoint</span>
+carql show classic-ppo -s first              <span class="c"># open on the very first checkpoint</span>
+carql show classic-dueling_per -k every:250  <span class="c"># fewer dots on the timeline</span>
+carql show classic-dueling_per -s 1200 -t track_1 --speed 2</pre></div>
+  </div>
+  <p class="prose">The HUD shows run and algorithm, checkpoint index and its eval score, gates/laps/steps, speed, drift, the action being taken, the last reward and the episode return. The bar chart at the bottom left is the Q-value (or, for PPO, the action probability) of each of the nine actions, with the chosen one highlighted: <code>L R A B</code> = left, right, accelerate, brake; <code>AL AR BL BR</code> combinations; <code>-</code> coast. Keys are listed under <a href="#keys">Keyboard</a>.</p>
+</section>
+
+<!-- ============================================================ race -->
+<section id="race">
+  <div class="head"><span class="eyebrow">Command</span><h2>carql race</h2><p>Several checkpoints and/or runs drive the same track at the same time as ghost cars, with a live leaderboard. Checkpoints from one run make a training-progress race; best checkpoints from several runs make a tournament.</p></div>
+  <div class="cmd">
+    <div class="syn"><span class="eyebrow">Synopsis</span>
+<pre>carql race RUN[:SPEC] [RUN[:SPEC] …] [<span class="f">-k</span> SPEC] [<span class="f">-t</span> TRACK] [<span class="f">--speed</span> X] [<span class="f">--no-respawn</span>]</pre></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Flag</th><th>Default</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td class="flag">RUN[:SPEC]<small>one or more</small></td><td class="def">—</td><td>Run names. A run may carry its own spec after a colon (<code>classic-ppo:best</code>, <code>classic-dqn:200,1500</code>); runs without one use <code>-k</code>.</td></tr>
+        <tr><td class="flag">-k, --checkpoints SPEC</td><td class="def">spread:6</td><td>Spec applied to runs given without their own. <code>best</code> turns a list of runs into a tournament.</td></tr>
+        <tr><td class="flag">-t, --track TRACK</td><td class="def">first run's track</td><td>Race on another track.</td></tr>
+        <tr><td class="flag">--speed X</td><td class="def">1</td><td>Simulation steps per frame.</td></tr>
+        <tr><td class="flag">--no-respawn</td><td class="def">respawn on</td><td>By default a crashed car reappears on the start line after ~1 s and its crash is counted. With this flag everyone stays dead until the last car is done, then the field resets.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="syn"><span class="eyebrow">Examples</span>
+<pre>carql race classic-dueling_per                       <span class="c"># 6 checkpoints spread over training</span>
+carql race classic-dueling_per -k 100,500,1000,latest
+carql race classic-dqn classic-ddqn classic-dueling_per classic-ppo -k best     <span class="c"># tournament</span>
+carql race classic-ppo:best classic-dueling_per:spread:3 -t track_1</pre></div>
+  </div>
+  <p class="prose">The leaderboard ranks by lap progress (laps, then gates, then distance to the next gate) and shows crashes. <kbd>Tab</kbd> moves the inspection focus — rays, Q-values and the highlighted next gate follow the focused car. Cars from different runs must share the car physics; the first run's config is used for the arena.</p>
+</section>
+
+<!-- ============================================================ build -->
+<section id="build">
+  <div class="head"><span class="eyebrow">Command</span><h2>carql build</h2><p>Track builder. You draw a centerline with the mouse and pick a width; walls (the contour of the rasterised stroke) and evenly spaced gates are generated live.</p></div>
+  <div class="cmd">
+    <div class="syn"><span class="eyebrow">Synopsis</span>
+<pre>carql build [TRACK] [<span class="f">--size</span> WxH] [<span class="f">--width</span> W]</pre></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Flag</th><th>Default</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td class="flag">TRACK</td><td class="def">new track</td><td>An existing <em>generated</em> track to edit (name or path). Hand-coded tracks like <code>classic</code> have no centerline and cannot be edited — import a PNG or draw a new one.</td></tr>
+        <tr><td class="flag">--size WxH</td><td class="def">1260x700</td><td>World size for a new track, in world units. The classic track is 1260×700 with a 25×15 car; keep that scale unless you also change <code>[car]</code>.</td></tr>
+        <tr><td class="flag">--width W</td><td class="def">90</td><td>Initial road width. Classic is ~85 wide, track_1 ~50 (tight).</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <p class="prose">New tracks save as <code>tracks/custom-MMDD-HHMM.json</code>; the name is shown in the top-left panel. The start is control point 0 (yellow); the blue arrow is the start pose. <kbd>T</kbd> drops a car onto the track you are drawing so you can test-drive it before saving. Full key list under <a href="#keys">Keyboard</a>.</p>
+</section>
+
+<!-- ============================================================ play -->
+<section id="play">
+  <div class="head"><span class="eyebrow">Command</span><h2>carql play</h2><p>Drive a car yourself with the arrow keys — the fastest way to feel a track's difficulty and the reward numbers.</p></div>
+  <div class="cmd">
+    <div class="syn"><span class="eyebrow">Synopsis</span>
+<pre>carql play [<span class="f">-t</span> TRACK]</pre></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Flag</th><th>Default</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td class="flag">-t, --track TRACK</td><td class="def">classic</td><td>Track name or path.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <p class="prose"><kbd>↑</kbd> accelerate, <kbd>↓</kbd> brake, <kbd>←</kbd>/<kbd>→</kbd> steer; combinations map to the same nine discrete actions the agent has. The car never fully stops (minimum speed, as in the original) and drifts when turning above speed 5. The HUD shows the per-step reward, so you can see what the agent is being paid for.</p>
+</section>
+
+<!-- ============================================================ track -->
+<section id="track">
+  <div class="head"><span class="eyebrow">Command</span><h2>carql track</h2><p>Track utilities: import a drawing, inspect, list, render.</p></div>
+  <div class="cmd">
+    <div class="syn"><span class="eyebrow">Synopsis</span>
+<pre>carql track import PNG [<span class="f">--name</span> N] [<span class="f">-o</span> OUT] [<span class="f">--height</span> H] [<span class="f">--gate-spacing</span> S] [<span class="f">--open</span>] [<span class="f">--invert</span>] [<span class="f">--reverse</span>]
+carql track info TRACK
+carql track list
+carql track preview TRACK [<span class="f">-o</span> OUT.png]</pre></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Subcommand · flag</th><th>Default</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td class="flag">import PNG</td><td class="def">—</td><td>A drawn road, bright on a dark background (like the original <code>Track.png</code>). The stroke is skeletonised to recover the centerline and the distance transform gives the width; the result is a regular generated track you can edit in <code>build</code>.</td></tr>
+        <tr><td class="flag">  --name N</td><td class="def">file stem</td><td>Track name.</td></tr>
+        <tr><td class="flag">  -o, --out OUT</td><td class="def">tracks/&lt;name&gt;.json</td><td>Output path.</td></tr>
+        <tr><td class="flag">  --height H</td><td class="def">700</td><td>World height the image is scaled to (keeps the car proportion consistent with the classic track).</td></tr>
+        <tr><td class="flag">  --gate-spacing S</td><td class="def">60</td><td>Distance between gates in world units. Fewer gates = sparser reward.</td></tr>
+        <tr><td class="flag">  --open</td><td class="def">closed loop</td><td>The stroke is a point-to-point course; the last gate is the finish line.</td></tr>
+        <tr><td class="flag">  --invert</td><td class="def">off</td><td>Dark road on a bright background.</td></tr>
+        <tr><td class="flag">  --reverse</td><td class="def">clockwise</td><td>Drive counter-clockwise.</td></tr>
+        <tr><td class="flag">info TRACK</td><td class="def">—</td><td>Size, wall and gate counts, start pose, approximate lap length.</td></tr>
+        <tr><td class="flag">list</td><td class="def">—</td><td>One line per track in <code>tracks/</code>.</td></tr>
+        <tr><td class="flag">preview TRACK [-o]</td><td class="def">&lt;track&gt;_preview.png</td><td>Static PNG with walls (red), gates (green, first one yellow) and the start (blue dot) — handy for checking an import without opening a window.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="syn"><span class="eyebrow">Examples</span>
+<pre>carql track import assets/track_1.png --name track_1
+carql track import sketch.png --gate-spacing 45 --reverse
+carql track preview track_1 -o /tmp/t1.png</pre></div>
+  </div>
+</section>
+
+<!-- ============================================================ runs -->
+<section id="runs">
+  <div class="head"><span class="eyebrow">Command</span><h2>carql runs</h2><p>List every run under <code>runs/</code> with its algorithm, track, checkpoint range and best evaluation.</p></div>
+  <div class="cmd">
+    <div class="syn"><span class="eyebrow">Synopsis</span><pre>carql runs</pre></div>
+<pre>classic-dueling_per          dqn  track=classic       60 checkpoints (ep 50..3000), best eval 216.9 gates / 3.00 laps @ ep 1200
+classic-ppo                  ppo  track=classic       60 checkpoints (ep 50..3000), best eval 246.1 gates / 4.00 laps @ ep 2200</pre>
+  </div>
+</section>
+
+<!-- ============================================================ export -->
+<section id="export">
+  <div class="head"><span class="eyebrow">Command</span><h2>carql export</h2><p>Simulate a race headlessly (no window) and write a self-contained HTML replay: canvas rendering, scrubber, speed control, leaderboard, trails. One file, no dependencies, send it to anyone.</p></div>
+  <div class="cmd">
+    <div class="syn"><span class="eyebrow">Synopsis</span>
+<pre>carql export RUN[:SPEC] [RUN[:SPEC] …] [<span class="f">-k</span> SPEC] [<span class="f">-t</span> TRACK] [<span class="f">--steps</span> N] [<span class="f">-o</span> FILE] [<span class="f">--no-respawn</span>]</pre></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Flag</th><th>Default</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td class="flag">RUN[:SPEC] …</td><td class="def">—</td><td>Same run/spec syntax as <a href="#race"><code>race</code></a>.</td></tr>
+        <tr><td class="flag">-k, --checkpoints SPEC</td><td class="def">spread:6</td><td>Spec for runs without their own.</td></tr>
+        <tr><td class="flag">-t, --track TRACK</td><td class="def">first run's track</td><td>Track to simulate on.</td></tr>
+        <tr><td class="flag">--steps N</td><td class="def">1800</td><td>Simulation steps to record; 60 steps = 1 s of replay. 1800 ≈ 30 s ≈ 150 KB.</td></tr>
+        <tr><td class="flag">-o, --out FILE</td><td class="def">replay.html</td><td>Output file.</td></tr>
+        <tr><td class="flag">--no-respawn</td><td class="def">respawn on</td><td>As in <code>race</code>.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="syn"><span class="eyebrow">Examples</span>
+<pre>carql export classic-dueling_per -k spread:6 --steps 2400 -o replays/timeline.html
+carql export classic-dqn:best classic-ppo:best -o replays/final.html</pre></div>
+  </div>
+  <p class="prose">Inside the viewer, <kbd>E</kbd> does the same for the last 60 seconds you just watched, into <code>replays/&lt;run&gt;-&lt;timestamp&gt;.html</code>.</p>
+</section>
+
+<!-- ============================================================ plot -->
+<section id="plot">
+  <div class="head"><span class="eyebrow">Command</span><h2>carql plot</h2><p>Learning curves: training score, greedy evaluation, episode length and return — one line per run, so several runs overlay for comparison. Needs matplotlib (<code>pip install -e ".[plot]"</code>).</p></div>
+  <div class="cmd">
+    <div class="syn"><span class="eyebrow">Synopsis</span>
+<pre>carql plot [RUN …] [<span class="f">-o</span> FILE.png]</pre></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Flag</th><th>Default</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td class="flag">RUN …</td><td class="def">all runs</td><td>Run names to overlay. No argument (or <code>all</code>) plots every run.</td></tr>
+        <tr><td class="flag">-o, --out FILE.png</td><td class="def">open a window</td><td>Write a PNG instead of opening an interactive window.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="syn"><span class="eyebrow">Examples</span>
+<pre>carql plot
+carql plot classic-dqn classic-ddqn classic-dueling_per classic-ppo -o tournament.png</pre></div>
+  </div>
+</section>
+
+
+<!-- ============================================================ gui -->
+<section id="gui">
+  <div class="head"><span class="eyebrow">Command</span><h2>carql gui</h2><p>A desktop launcher for the common paths: start and watch a training run, then open the viewer on any run. Nothing you cannot do from the terminal — but every button shows the exact <code>carql</code> command it runs in the status bar, so it doubles as a cheat sheet.</p></div>
+  <div class="cmd">
+    <div class="syn"><span class="eyebrow">Synopsis</span><pre>carql gui</pre></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Area</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td class="flag">Train</td><td>Track, agent preset, run name (suggested as <code>&lt;track&gt;-&lt;variant&gt;</code>), episode budget, free-form overrides (<code>train.seed=1 env.reward_crash=-80</code>), resume. <b>Start</b> launches <code>carql train</code> as a separate process; the log streams into the panel and the chart draws training score and eval score per episode as the lines arrive. <b>Stop</b> sends the same signal as <kbd>Ctrl</kbd>+<kbd>C</kbd>, so <code>latest.pt</code> is saved.</td></tr>
+        <tr><td class="flag">Runs</td><td>Every run under <code>runs/</code> with algorithm, track, checkpoint range and best evaluation. Select one and <b>Show</b> (or double-click); select several and <b>Race</b> (spread of 6 checkpoints each) or <b>Tournament</b> (best of each). Checkpoint spec, start position, speed and an alternative track apply to both.</td></tr>
+        <tr><td class="flag">Plot · Export</td><td><code>carql plot</code> for the selected runs (window), <code>carql export</code> to <code>replays/</code>.</td></tr>
+        <tr><td class="flag">Tracks</td><td><b>Play</b> a track with the arrow keys, <b>Edit</b> a generated track in the builder, or start a <b>New track</b>.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <p class="prose">Needs tkinter, which ships with python.org, uv and Homebrew Pythons. Viewer windows are separate processes, so the launcher stays responsive while they run.</p>
+</section>
+
+<!-- ============================================================ specs -->
+<section id="specs">
+  <div class="head"><span class="eyebrow">Reference</span><h2>Checkpoint specs</h2><p>The value of <code>-k</code> / <code>--checkpoints</code>, and what follows the colon in <code>RUN:SPEC</code>. Episode numbers snap to the nearest saved checkpoint.</p></div>
+  <div class="spec">
+    <div class="item"><code>latest</code><span>The most recent weights (<code>latest.pt</code>). Default for <code>show</code>'s start.</span></div>
+    <div class="item"><code>best</code><span>Highest greedy evaluation so far (<code>best.pt</code>). Use for tournaments.</span></div>
+    <div class="item"><code>all</code><span>Every checkpoint in the run. Default for <code>show</code>.</span></div>
+    <div class="item"><code>1200</code><span>The checkpoint nearest to episode 1200.</span></div>
+    <div class="item"><code>100,500,1000,latest</code><span>An explicit list; <code>latest</code> and <code>best</code> may appear in it.</span></div>
+    <div class="item"><code>spread:6</code><span>Six checkpoints evenly spaced from first to last. Default for <code>race</code> and <code>export</code>.</span></div>
+    <div class="item"><code>every:250</code><span>Every checkpoint whose episode is a multiple of 250.</span></div>
+  </div>
+</section>
+
+<!-- ============================================================ config -->
+<section id="config">
+  <div class="head"><span class="eyebrow">Reference</span><h2>Config keys</h2><p>Everything in <code>configs/default.toml</code>, overridable with <code>--set section.key=value</code>. A run stores the resolved config in its folder, and every checkpoint carries a copy.</p></div>
+
+  <details open>
+    <summary><span><code>[car]</code> — physics, in world units per simulation step</span></summary>
+    <div class="tablewrap"><table><thead><tr><th>Key</th><th>Default</th><th>Meaning</th></tr></thead><tbody>
+      <tr><td class="flag">length / width</td><td class="def">25 / 15</td><td>Car rectangle, along and across the heading. Collision box and drawn size.</td></tr>
+      <tr><td class="flag">max_speed</td><td class="def">12.5</td><td>Top speed. Turn radius at top speed is ~60 units, less than the classic road width.</td></tr>
+      <tr><td class="flag">min_speed</td><td class="def">0.78</td><td>The car never stops — braking floors at this speed (original behaviour).</td></tr>
+      <tr><td class="flag">acceleration</td><td class="def">0.156</td><td>Speed gained per step while accelerating.</td></tr>
+      <tr><td class="flag">brake_factor</td><td class="def">2.0</td><td>Braking = <code>brake_factor × acceleration</code>.</td></tr>
+      <tr><td class="flag">friction</td><td class="def">0.98</td><td>Speed multiplier per step when coasting.</td></tr>
+      <tr><td class="flag">turn_rate</td><td class="def">0.2</td><td>Radians per step at full steering authority.</td></tr>
+      <tr><td class="flag">steer_full_speed</td><td class="def">5.0</td><td>Below this speed, steering authority scales down linearly (no turning on the spot).</td></tr>
+      <tr><td class="flag">drift_gain</td><td class="def">1.0</td><td>Sideways momentum added per turn step. <code>0</code> = pure grip, <code>1</code> = the original Tokyo drift.</td></tr>
+      <tr><td class="flag">drift_friction</td><td class="def">0.87</td><td>Decay of drift momentum per step.</td></tr>
+      <tr><td class="flag">drift_min_speed</td><td class="def">5.0</td><td>No drift below this speed.</td></tr>
+    </tbody></table></div>
+  </details>
+
+  <details open>
+    <summary><span><code>[env]</code> — track, sensors, rewards, episode limits</span></summary>
+    <div class="tablewrap"><table><thead><tr><th>Key</th><th>Default</th><th>Meaning</th></tr></thead><tbody>
+      <tr><td class="flag">track</td><td class="def">"classic"</td><td>Track name or path (<code>-t</code> sets this).</td></tr>
+      <tr><td class="flag">n_rays / fov / ray_length</td><td class="def">16 / 360 / 600</td><td>Distance sensors: count, angular coverage in degrees, maximum range. Changing them changes the observation size — start a new run.</td></tr>
+      <tr><td class="flag">gate_lookahead</td><td class="def">2</td><td>Bearings to the next N gates are part of the observation (lets the car anticipate corners).</td></tr>
+      <tr><td class="flag">max_steps</td><td class="def">2000</td><td>Episode length cap.</td></tr>
+      <tr><td class="flag">stall_steps</td><td class="def">300</td><td>Episode ends if no gate is passed for this many steps.</td></tr>
+      <tr><td class="flag">reward_gate</td><td class="def">5.0</td><td>Bonus for crossing the next gate in order.</td></tr>
+      <tr><td class="flag">reward_step</td><td class="def">-0.01</td><td>Cost per step.</td></tr>
+      <tr><td class="flag">reward_progress</td><td class="def">0.01</td><td>Per world unit of forward progress towards the next gate (dense shaping; ~0.12/step at top speed).</td></tr>
+      <tr><td class="flag">reward_crash</td><td class="def">-50.0</td><td>Penalty for hitting a wall. <span class="rule">Must dominate the dense progress reward</span>: at −5 a fast-and-crashy policy is nearly as good as a careful one and DQN learns exactly that.</td></tr>
+      <tr><td class="flag">reward_lap</td><td class="def">20.0</td><td>Bonus for completing a lap (closed track) or finishing (open track).</td></tr>
+      <tr><td class="flag">speed_bonus</td><td class="def">0.0</td><td>Optional per-step bonus proportional to speed.</td></tr>
+      <tr><td class="flag">random_start</td><td class="def">true</td><td>Training only: spawn at a random gate so the whole track is seen early. Evaluation and the viewer always start on the start line.</td></tr>
+      <tr><td class="flag">start_jitter_deg</td><td class="def">5.0</td><td>Random heading jitter at spawn (training); evaluation uses at least 3°.</td></tr>
+    </tbody></table></div>
+  </details>
+
+  <details open>
+    <summary><span><code>[agent]</code> — network and learning</span></summary>
+    <div class="tablewrap"><table><thead><tr><th>Key</th><th>Default</th><th>Meaning</th></tr></thead><tbody>
+      <tr><td class="flag">algo</td><td class="def">"dqn"</td><td><code>dqn</code> (with the flags below) or <code>ppo</code>.</td></tr>
+      <tr><td class="flag">hidden / activation</td><td class="def">[256,256] / "elu"</td><td>MLP layers. The dueling head adds two 256-wide streams on top.</td></tr>
+      <tr><td class="flag">lr / gamma</td><td class="def">2.5e-4 / 0.99</td><td>Adam learning rate, discount.</td></tr>
+      <tr><td class="flag">double / dueling / per</td><td class="def">true / true / true</td><td>DQN variants: Double DQN target, dueling value/advantage head, prioritised replay. The presets are just combinations of these.</td></tr>
+      <tr><td class="flag">per_alpha / per_beta0 / per_eps</td><td class="def">0.6 / 0.4 / 1e-3</td><td>Prioritisation exponent, initial importance-sampling exponent (annealed to 1), priority floor.</td></tr>
+      <tr><td class="flag">per_clip</td><td class="def">5.0</td><td>|TD error| is clipped to this for priorities (0 = off). Without it the −50 crashes make PER sample only the newest transitions.</td></tr>
+      <tr><td class="flag">reward_scale</td><td class="def">0.1</td><td>Rewards are multiplied by this before entering the replay buffer, keeping TD errors near unit size. Logged and displayed rewards are unscaled.</td></tr>
+      <tr><td class="flag">buffer_size / batch_size</td><td class="def">200000 / 128</td><td>Replay capacity (transitions) and minibatch size.</td></tr>
+      <tr><td class="flag">learning_starts</td><td class="def">5000</td><td>Frames of random play before the first gradient update.</td></tr>
+      <tr><td class="flag">updates_per_step</td><td class="def">4</td><td>Gradient updates per batched environment step (64 cars → 4 updates of 128 samples).</td></tr>
+      <tr><td class="flag">n_step</td><td class="def">3</td><td>Multi-step returns.</td></tr>
+      <tr><td class="flag">target_update / polyak</td><td class="def">500 / 0.005</td><td>Gradient updates between hard target-network copies; <code>target_update = 0</code> switches to Polyak averaging with this rate.</td></tr>
+      <tr><td class="flag">eps_start / eps_end / eps_decay_frames</td><td class="def">1.0 / 0.05 / 500000</td><td>ε-greedy schedule, linear in frames (not episodes).</td></tr>
+      <tr><td class="flag">grad_clip / huber</td><td class="def">10.0 / false</td><td>Gradient-norm clip; Huber instead of MSE loss.</td></tr>
+      <tr><td class="flag">rollout_steps / ppo_epochs / minibatches</td><td class="def">128 / 4 / 8</td><td>PPO only: steps per car per rollout, epochs over each rollout, minibatches per epoch.</td></tr>
+      <tr><td class="flag">clip / gae_lambda / entropy_coef / value_coef</td><td class="def">0.2 / 0.95 / 0.01 / 0.5</td><td>PPO only: clipping range, GAE λ, entropy and value-loss weights.</td></tr>
+    </tbody></table></div>
+  </details>
+
+  <details open>
+    <summary><span><code>[train]</code> — schedule and bookkeeping</span></summary>
+    <div class="tablewrap"><table><thead><tr><th>Key</th><th>Default</th><th>Meaning</th></tr></thead><tbody>
+      <tr><td class="flag">run</td><td class="def">""</td><td>Run name (<code>-r</code>); empty = <code>&lt;track&gt;-&lt;variant&gt;</code>.</td></tr>
+      <tr><td class="flag">n_envs</td><td class="def">64</td><td>Cars simulated in parallel. More cars = more data per gradient update.</td></tr>
+      <tr><td class="flag">total_episodes</td><td class="def">3000</td><td>Episode budget (<code>-n</code>).</td></tr>
+      <tr><td class="flag">checkpoint_every</td><td class="def">50</td><td>Episodes between checkpoints → 60 dots on the timeline for a default run.</td></tr>
+      <tr><td class="flag">eval_every / eval_envs</td><td class="def">50 / 8</td><td>Greedy evaluation from the start line every N episodes, over this many jittered cars; feeds <code>best.pt</code>.</td></tr>
+      <tr><td class="flag">log_every</td><td class="def">50</td><td>Episodes between log lines.</td></tr>
+      <tr><td class="flag">seed</td><td class="def">0</td><td>Seeds numpy, torch and the environments.</td></tr>
+      <tr><td class="flag">device</td><td class="def">"auto"</td><td><code>auto</code> resolves to CPU — these networks are too small for a GPU to pay off.</td></tr>
+      <tr><td class="flag">threads</td><td class="def">0</td><td>Torch CPU threads (0 = torch default). Set to 1–2 when running several trainings side by side.</td></tr>
+    </tbody></table></div>
+  </details>
+</section>
+
+<!-- ============================================================ keys -->
+<section id="keys">
+  <div class="head"><span class="eyebrow">Reference</span><h2>Keyboard</h2><p><kbd>H</kbd> shows the same list inside every window; <kbd>Esc</kbd> quits.</p></div>
+  <div class="two">
+    <div>
+      <h3>show</h3>
+      <div class="tablewrap"><table><tbody>
+        <tr><td class="kbd"><kbd>←</kbd> <kbd>→</kbd></td><td>Previous / next checkpoint (car resets)</td></tr>
+        <tr><td class="kbd"><kbd>1</kbd>…<kbd>9</kbd></td><td>Jump to 10 % … 90 % of the timeline</td></tr>
+        <tr><td class="kbd"><kbd>Home</kbd> <kbd>End</kbd></td><td>First / last checkpoint</td></tr>
+        <tr><td class="kbd">click / scroll on timeline</td><td>Jump / step through checkpoints</td></tr>
+        <tr><td class="kbd"><kbd>Space</kbd> <kbd>.</kbd></td><td>Pause · single step while paused</td></tr>
+        <tr><td class="kbd"><kbd>+</kbd> <kbd>-</kbd></td><td>Simulation speed ×2 / ÷2</td></tr>
+        <tr><td class="kbd"><kbd>R</kbd></td><td>Reset the car to the start line</td></tr>
+        <tr><td class="kbd"><kbd>V</kbd> <kbd>Q</kbd> <kbd>G</kbd> <kbd>W</kbd> <kbd>I</kbd></td><td>Toggle rays · Q-value bars · gates · walls · info panel</td></tr>
+        <tr><td class="kbd"><kbd>M</kbd></td><td>Take the wheel (arrow keys); again to hand back</td></tr>
+        <tr><td class="kbd"><kbd>E</kbd></td><td>Export the last 60 s as HTML to <code>replays/</code></td></tr>
+      </tbody></table></div>
+      <h3>race</h3>
+      <div class="tablewrap"><table><tbody>
+        <tr><td class="kbd"><kbd>Tab</kbd></td><td>Focus the next car (rays, Q-values, next gate follow it)</td></tr>
+        <tr><td class="kbd"><kbd>L</kbd></td><td>Toggle the leaderboard</td></tr>
+        <tr><td class="kbd"><kbd>R</kbd></td><td>Restart the race</td></tr>
+        <tr><td class="kbd">others</td><td>As in show: <kbd>Space</kbd> <kbd>.</kbd> <kbd>+</kbd> <kbd>-</kbd> <kbd>V</kbd> <kbd>Q</kbd> <kbd>G</kbd> <kbd>W</kbd> <kbd>I</kbd> <kbd>E</kbd></td></tr>
+      </tbody></table></div>
+    </div>
+    <div>
+      <h3>build</h3>
+      <div class="tablewrap"><table><tbody>
+        <tr><td class="kbd">left click</td><td>Add a control point at the end, or drag an existing one</td></tr>
+        <tr><td class="kbd"><kbd>Shift</kbd> + click</td><td>Insert a point into the nearest segment</td></tr>
+        <tr><td class="kbd">right click</td><td>Delete the point under the cursor</td></tr>
+        <tr><td class="kbd"><kbd>Backspace</kbd> · <kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Delete the last point · undo</td></tr>
+        <tr><td class="kbd">scroll · <kbd>[</kbd> <kbd>]</kbd></td><td>Road width ∓5</td></tr>
+        <tr><td class="kbd"><kbd>,</kbd> <kbd>.</kbd></td><td>Gate spacing ∓10</td></tr>
+        <tr><td class="kbd"><kbd>C</kbd></td><td>Closed loop ↔ open course</td></tr>
+        <tr><td class="kbd"><kbd>D</kbd></td><td>Reverse driving direction</td></tr>
+        <tr><td class="kbd"><kbd>1</kbd></td><td>Make the hovered point the start (closed loops)</td></tr>
+        <tr><td class="kbd"><kbd>T</kbd></td><td>Test-drive with the arrow keys; <kbd>T</kbd> again to edit</td></tr>
+        <tr><td class="kbd"><kbd>G</kbd> <kbd>W</kbd></td><td>Toggle gates · walls</td></tr>
+        <tr><td class="kbd"><kbd>S</kbd> <kbd>N</kbd></td><td>Save · new (clear)</td></tr>
+      </tbody></table></div>
+      <h3>play</h3>
+      <div class="tablewrap"><table><tbody>
+        <tr><td class="kbd"><kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd></td><td>Accelerate · brake · steer</td></tr>
+        <tr><td class="kbd"><kbd>R</kbd> <kbd>V</kbd> <kbd>G</kbd> <kbd>W</kbd></td><td>Reset · rays · gates · walls</td></tr>
+      </tbody></table></div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+</div>
+\n</body>\n</html>\n

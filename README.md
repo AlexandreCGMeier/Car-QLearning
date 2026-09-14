@@ -13,12 +13,17 @@ pyglet-1.5 / TensorFlow-1 project: same idea, same physics, modern stack.
   (`carql track import`), gates and walls are generated automatically.
 * **Replays** — export any session as a self-contained HTML file.
 
+Full command-line reference with every flag: [`docs/cli.html`](docs/cli.html) (open it in a browser).
+
 ## Install
 
 Python 3.11+ (3.13 works). From the repo root:
 
 ```bash
+uv pip install -e ".[plot]"              # or: pip install -e ".[plot]"
 uv venv && source .venv/bin/activate     # or: python -m venv .venv
+cd /Users/Alex/Documents/GitHub/Car-QLearning && source .venv/bin/activate
+
 uv pip install -e ".[plot]"              # or: pip install -e ".[plot]"
 carql --help
 ```
@@ -29,14 +34,15 @@ Everything runs on the CPU; the networks are tiny, a GPU would only slow things 
 ## The switch: train or show
 
 ```bash
-carql train                       # trains Dueling DDQN+PER on tracks/classic.json -> runs/classic-dqn/
+carql train                       # trains Dueling DDQN+PER on tracks/classic.json -> runs/classic-dueling_per/
 carql show                        # opens the most recent run in the viewer
+carql gui                         # or do both from a small desktop launcher (tkinter)
 ```
 
 That's it. `train` writes a self-contained run folder; `show` reads one:
 
 ```
-runs/classic-dqn/
+runs/classic-dueling_per/
   config.toml        the exact configuration used (car physics, rewards, agent, schedule)
   track.json         a copy of the track
   checkpoints/       ep_000100.pt, ep_000200.pt, ...   (every train.checkpoint_every episodes)
@@ -53,9 +59,9 @@ was trained with — and any checkpoint from any run can be dropped onto any tra
 
 ```bash
 carql train -c ppo                              # preset from configs/ (dqn, ddqn, dueling_per, ppo)
-carql train -t track_1 -r mytrack-dqn -n 8000   # other track, run name, episode budget
+carql train -t track_1 -r mytrack-dqn -n 8000   # other track, run name (default <track>-<variant>), episode budget
 carql train --set agent.hidden=[128,128] --set env.reward_crash=-80 --set train.n_envs=32
-carql train -r classic-dqn --resume            # continue from latest.pt
+carql train -r classic-dqn --resume            # continue from latest.pt (uses the run's stored config)
 carql runs                                     # list runs, checkpoint ranges and best evals
 carql plot classic-dqn classic-ppo -o curves.png
 ```
@@ -147,7 +153,8 @@ carql/
   train.py      training loops, run folders, evaluation        runs.py      run/checkpoint discovery
   sim.py        headless race simulation (viewer + export)     replay.py    HTML export
   viewer/       base.py (window, camera, track/car graphics, HUD), show.py, builder.py
-  cli.py        carql train | show | race | build | track | runs | export | plot | play
+  cli.py        carql train | show | race | build | track | runs | export | plot | play | gui
+  gui.py        tkinter launcher: train with live log/curve, show, race, build, play
 configs/        default.toml + presets        tracks/   *.json        tests/   pytest
 ```
 
